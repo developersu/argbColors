@@ -1,9 +1,9 @@
-# Specification of the 048d:5711 Integrated Technology Express, Inc. GIGABYTE Device
+# Uh, umm... well... let's call it specification of the 048d:5711 Integrated Technology Express, Inc. GIGABYTE Device
 
-#### Structure description
+#### Document structure
 
 **USB control transfer used**
-(and usbhid 🤓)
+(and USB HID a bit 🤓)
 
 Endpoint: **0x00**, Direction: **OUT**
 * bmRequestType: **0x21**
@@ -35,11 +35,11 @@ int returned_value = libusb_control_transfer(dev_handle, 0xa1, 1, 0x03cc, 1, buf
 
 ----
 
-Interaction could be split on three phases: Application startup, command transmission, ending
+Interaction could be split on three phases: Application initial flow, command(s) transmission, termination
 
 ### Application initial flow:
 ```
-cc60             ↓↓↓↓↓↓↓↓ version in hex                                    
+cc60             ↓↓↓↓↓↓↓↓ version in hex. I guess. At least looks like this.
 INPUT << cc01000100001802000000034954353731312d47494741425954452056302e302e32342e320000000000000002000100020001000001020000c01157
 cc60                             ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑ ascii text: 'IT5711-GIGABYTE V0.0.24.2'
 INPUT << cc01000100001802000000034954353731312d47494741425954452056302e302e32342e320000000000000002000100020001000001020000c01157
@@ -59,15 +59,13 @@ cc34
 cc38
 ```
 
-### Commands
-
-NOTE: Переходы между изменениями цвета в sync режимах идут без следующих пред-последовательностей. Но переход от отдельных к синхронизированному - через стандартные ппоследовательности
+### Commands / directives to apply changes
 
 There are two types of commands: 
-* syncronized - applies same setting to everything
+* synchronized - applies same setting to everything
 * separate - adjusts settings separately
 
-***Commands sent before actual directive. Structure is always the same***
+*** Prefix-directives: commands sent before actual sequence of the command. Structure is always the same***
 ```
 cc20
 cc21
@@ -82,6 +80,16 @@ cc91
 cc92
 cc28ff07
 ```
+After application initial flow sent and till termination (see below) any command could be applied randomly. One after one or in completely random sequence. 
+Let's summarize: full command sequence is prefix-directives plus actual command sequence (as explained in sections below).
+
+~~Butt~~But actually 'prefix-directives' always sent:
+1. Before switching between 'separate' commands
+2. Before switching from 'separate' command already applied to 'synchronized' command
+3. Before switching from 'synchronized' command to 'separate'
+4. Before initial application of the 'synchronized' command
+
+Therefore no need to send 'prefix-directives' once switching between two 'synchronized' commands. Is it safe send it either way? Could be.
 
 ---
 #### Turn off backlight - Applies to everything!
@@ -96,6 +104,7 @@ EXAMPLE:
 
 #### Turn off backlight (user selects: channel)
 ```
+  ↓↓↓↓↓↓-----------------------|
 cc2204000000000000000001ff   ← 1   |‾‾|‾‾‾‾‾‾‾‾‾‾‾1|
 cc2410000000000000000001ff   ← 2   | 6| |‾‾| ||||  |
 cc2520000000000000000001ff   ← 3   |  |  ‾‾  ||||  |
@@ -249,7 +258,9 @@ EXAMPLE:
 
 ---
 ### Termination
-[repeat last setup request for some reason]
+[repeat last sequence for some reason. or don't. who knows]
 ```
 cc4701
 ```
+
+This work is licensed under a  [Creative Commons Attribution 4.0 International License](https://creativecommons.org/licenses/by/4.0/Attribution)
