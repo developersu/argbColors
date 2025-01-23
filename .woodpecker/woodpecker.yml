@@ -1,0 +1,13 @@
+steps:
+  - name: build-archieve
+    when:
+      event: [tag, push]
+    image: alpine:3
+    commands:
+      - echo "FIX ME"
+      - apk update && apk add libusb-dev make gcc musl-dev
+      - make
+      - mkdir -p /builds/argbColors
+      - cp bin/argbColors /builds/argbColors/
+    volumes:
+      - /home/www/builds:/builds
