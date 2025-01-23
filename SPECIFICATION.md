@@ -3,6 +3,7 @@
 #### Document structure
 
 **USB control transfer used**
+
 (and USB HID a bit 🤓)
 
 Endpoint: **0x00**, Direction: **OUT**
@@ -65,7 +66,7 @@ There are two types of commands:
 * synchronized - applies same setting to everything
 * separate - adjusts settings separately
 
-*** Prefix-directives: commands sent before actual sequence of the command. Structure is always the same***
+***Prefix-directives: commands sent before actual sequence of the command. Structure is always the same***
 ```
 cc20
 cc21
@@ -237,7 +238,7 @@ EXAMPLE:
 
 ---
 
-#### Cycle (user selects: intensive and brightness)
+#### Cycle (user selects: intensity and brightness)
 ```
                             ↓↓↓↓↓↓- Old values; doesn't make any difference
 cc2204000000000000000004__00fd00fe0000000000________0000000007
@@ -247,7 +248,7 @@ cc2640000000000000000004__00fd00fe0000000000________0000000007
 cc2780000000000000000004__00fd00fe0000000000________0000000007
 cc9100020000000000000004__00fd00fe0000000000________0000000007
 cc28ff07                ↑↑                  ↑↑↑↑↑↑↑↑
-                        ff → Bright. max    9001c800 → Intensive max
+                        ff → Bright. max    9001c800 → intensity max
                         b3            -1    58029001              -1
                         80            -2    2602c201              -2
                         4d            -3    5203ee02              -3
@@ -263,4 +264,4 @@ EXAMPLE:
 cc4701
 ```
 
-This work is licensed under a  [Creative Commons Attribution 4.0 International License](https://creativecommons.org/licenses/by/4.0/Attribution)
+This work is licensed under a  [Creative Commons Attribution 4.0 International License](https://creativecommons.org/licenses/by/4.0/)
