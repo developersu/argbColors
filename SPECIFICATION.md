@@ -62,6 +62,8 @@ cc38
 
 ### Commands / directives to apply changes
 
+BRG abbreviation stands for Blue Red Green
+
 There are two types of commands: 
 * synchronized - applies same setting to everything
 * separate - adjusts settings separately
@@ -145,7 +147,7 @@ EXAMPLE:
 
 #### Individually set static color (user selects: color, brightness)
 ```
-                            ↓↓↓↓↓↓ → Color as RGB
+                            ↓↓↓↓↓↓ → Color as BRG
 cc2204000000000000000001__00______ 
 cc2410000000000000000001__00______
 cc2520000000000000000001__00______
@@ -166,7 +168,7 @@ EXAMPLE:
 
 #### Synchronized static color (user selects: color) - Applies to everything!
 ```
-                            ↓↓↓↓↓↓ - Color as RGB
+                            ↓↓↓↓↓↓ - Color as BRG
 cc20ff070000000000000001ff00______
 cc28ff07
 ```
@@ -177,7 +179,7 @@ EXAMPLE:
 
 #### Impulse (user selects: color, intensity)
 ```
-                            ↓↓↓↓↓↓ - Color as RGB
+                            ↓↓↓↓↓↓ - Color as BRG
 cc22040000000000000000026400______0000000000____________00000001
 cc24100000000000000000026400______0000000000____________00000001
 cc25200000000000000000026400______0000000000____________00000001
@@ -198,7 +200,7 @@ EXAMPLE:
 
 #### Flash (user selects: intensity, color and brightness)
 ```
-                            ↓↓↓↓↓↓ - Color RGB or BGR
+                            ↓↓↓↓↓↓ - Color BGR
 cc2204000000000000000003__00______000000000064006400____0000000101
 cc2410000000000000000003__00______000000000064006400____0000000101
 cc2520000000000000000003__00______000000000064006400____0000000101
@@ -219,7 +221,7 @@ EXAMPLE:
 
 #### Flash-double (user selects: brightness, color and intensity)
 ```
-                            ↓↓↓↓↓↓ - Color RGB
+                            ↓↓↓↓↓↓ - Color BRG
 cc2204000000000000000003__00______000000000064006400____0000000102
 cc2410000000000000000003__00______000000000064006400____0000000102
 cc2520000000000000000003__00______000000000064006400____0000000102
