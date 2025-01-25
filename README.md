@@ -1,7 +1,7 @@
 # argb controls for 048d:5711 Integrated Technology Express, Inc. GIGABYTE Device 
 
 
-![License](https://img.shields.io/badge/License-GPLv3-blue.svg) [![status-badge](https://ci.redrise.ru/api/badges/13/status.svg)](https://ci.redrise.ru/repos/13)
+![License](https://img.shields.io/badge/License-GPLv3-blue.svg) ![status-badge](https://ci.redrise.ru/api/badges/13/status.svg)](https://ci.redrise.ru/repos/13)
 
 Reference hardware used: Z890 AORUS PRO ICE
 

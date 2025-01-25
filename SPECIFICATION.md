@@ -62,7 +62,7 @@ cc38
 
 ### Commands / directives to apply changes
 
-BRG abbreviation stands for Blue Red Green
+*BGR abbreviation stands for Blue Green Red*
 
 There are two types of commands: 
 * synchronized - applies same setting to everything
