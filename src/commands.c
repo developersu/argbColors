@@ -186,8 +186,6 @@ int wave1(){
     if(64 != writeUsb(end_alt_transaction))
         return 1;
 
-    unsigned char dir1[64] = { 0xcc, };
-
     printf("\rWave 1 (Sync) sequence sent\n");
     
     return 0;
