@@ -311,9 +311,301 @@ int impulse(int intensity, unsigned char red, unsigned char green, unsigned char
     
     return 0;
 }
+// flash - 1 = brighness; 2 - frequency
 
+int flash(int brightness, int frequency, unsigned char red, unsigned char green, unsigned char blue){
 
-// Impulse
-// Flash
-// 2xFlash
-// Cycle
+    unsigned char brgt;
+
+    switch (brightness){
+        case 0:
+            brgt = 0x1a;
+            break;
+        case 1:
+            brgt = 0x4d;
+            break;
+        case 2:
+            brgt = 0x80;
+            break;
+        case 3:
+            brgt = 0xb3;
+            break;
+        case 4:
+            brgt = 0xff;
+            break;
+        default:
+            printf("Intensity must be defined in range of 0..4\n");
+            return 1;
+    }
+
+    unsigned char *F;
+
+    switch (frequency){
+        case 0:
+            F = (unsigned char [2]) { 0x60, 0x09 }; // 6009
+            break;
+        case 1:
+            F = (unsigned char [2]) { 0xd0, 0x07 }; // d007
+            break;
+        case 2:
+            F = (unsigned char [2]) { 0x40, 0x06 }; // 4006
+            break;
+        case 3:
+            F = (unsigned char [2]) { 0xb0, 0x04 }; // b004
+            break;
+        case 4:
+            F = (unsigned char [2]) { 0x20, 0x03 }; // 2003
+            break;
+        default:
+            printf("Brightness must be defined in range of 0..4\n");
+            return 1;
+    }
+
+    // cc2204000000000000000003__00______000000000064006400____0000000101
+    unsigned char dir1[64] = { 0xcc, 0x22, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00,   0x00, 0x00, 0x00, 0x03, brgt, 0x00, blue, green, 
+                               red,  0x00, 0x00, 0x00, 0x00, 0x00, 0x64, 0x00,   0x64, 0x00, F[0], F[1], 0x00, 0x00, 0x00, 0x01, 
+    			               0x01, }; 
+    // cc2410000000000000000003__00______000000000064006400____0000000101
+    unsigned char dir2[64] = { 0xcc, 0x24, 0x10, 0x00, 0x00, 0x00, 0x00, 0x00,   0x00, 0x00, 0x00, 0x03, brgt, 0x00, blue, green, 
+                               red,  0x00, 0x00, 0x00, 0x00, 0x00, 0x64, 0x00,   0x64, 0x00, F[0], F[1], 0x00, 0x00, 0x00, 0x01, 
+    			               0x01, }; 
+    // cc2520000000000000000003__00______000000000064006400____0000000101
+    unsigned char dir3[64] = { 0xcc, 0x25, 0x20, 0x00, 0x00, 0x00, 0x00, 0x00,   0x00, 0x00, 0x00, 0x03, brgt, 0x00, blue, green, 
+                               red,  0x00, 0x00, 0x00, 0x00, 0x00, 0x64, 0x00,   0x64, 0x00, F[0], F[1], 0x00, 0x00, 0x00, 0x01, 
+    			               0x01, }; 
+    // cc2640000000000000000003__00______000000000064006400____0000000101
+    unsigned char dir4[64] = { 0xcc, 0x26, 0x40, 0x00, 0x00, 0x00, 0x00, 0x00,   0x00, 0x00, 0x00, 0x03, brgt, 0x00, blue, green, 
+                               red,  0x00, 0x00, 0x00, 0x00, 0x00, 0x64, 0x00,   0x64, 0x00, F[0], F[1], 0x00, 0x00, 0x00, 0x01, 
+    			               0x01, }; 
+    // cc2780000000000000000003__00______000000000064006400____0000000101
+    unsigned char dir5[64] = { 0xcc, 0x27, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00,   0x00, 0x00, 0x00, 0x03, brgt, 0x00, blue, green, 
+                               red,  0x00, 0x00, 0x00, 0x00, 0x00, 0x64, 0x00,   0x64, 0x00, F[0], F[1], 0x00, 0x00, 0x00, 0x01, 
+    			               0x01, }; 
+    // cc9100020000000000000003__00______000000000064006400____0000000101
+    unsigned char dir6[64] = { 0xcc, 0x91, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00,   0x00, 0x00, 0x00, 0x03, brgt, 0x00, blue, green, 
+                               red,  0x00, 0x00, 0x00, 0x00, 0x00, 0x64, 0x00,   0x64, 0x00, F[0], F[1], 0x00, 0x00, 0x00, 0x01, 
+    			               0x01, }; 
+
+    if(64 != writeUsb(dir1))
+        return 1;
+
+    if(64 != writeUsb(dir2))
+        return 1;
+    
+    if(64 != writeUsb(dir3))
+        return 1;
+
+    if(64 != writeUsb(dir4))
+        return 1;
+
+    if(64 != writeUsb(dir5))
+        return 1;
+
+    if(64 != writeUsb(dir6))
+        return 1;
+
+    if(64 != writeUsb(end_transaction))
+        return 1;
+
+    printf("\rFlash (Separate) sequence sent\n");
+    
+    return 0;
+}
+
+int doubleFlash(int brighness, int frequency, unsigned char red, unsigned char green, unsigned char blue){
+
+    unsigned char brgt;
+
+    switch (brighness){
+        case 0:
+            brgt = 0x1a;
+            break;
+        case 1:
+            brgt = 0x4d;
+            break;
+        case 2:
+            brgt = 0x80;
+            break;
+        case 3:
+            brgt = 0xb3;
+            break;
+        case 4:
+            brgt = 0xff;
+            break;
+        default:
+            printf("Brightness must be defined in range of 0..4\n");
+            return 1;
+    }
+    
+    unsigned char *F;
+
+    switch (frequency){
+        case 0:
+            F = (unsigned char [2]) { 0x28, 0x0a }; // 280a
+            break;
+        case 1:
+            F = (unsigned char [2]) { 0x98, 0x08 }; // 9808
+            break;
+        case 2:
+            F = (unsigned char [2]) { 0x08, 0x07 }; // 0807
+            break;
+        case 3:
+            F = (unsigned char [2]) { 0x78, 0x05 }; // 7805
+            break;
+        case 4:
+            F = (unsigned char [2]) { 0xe8, 0x03 }; // e803
+            break;
+        default:
+            printf("Frequency must be defined in range of 0..4\n");
+            return 1;
+    }
+
+    //cc2204000000000000000003__00______000000000064006400____0000000102
+    unsigned char dir1[64] = { 0xcc, 0x22, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00,   0x00, 0x00, 0x00, 0x03, brgt, 0x00, blue, green, 
+                               red, 0x00, 0x00, 0x00, 0x00, 0x00, 0x64, 0x00,    0x64, 0x00, F[0], F[1], 0x00, 0x00, 0x00, 0x01, 
+                               0x02, }; 
+    //cc2410000000000000000003__00______000000000064006400____0000000102
+    unsigned char dir2[64] = { 0xcc, 0x24, 0x10, 0x00, 0x00, 0x00, 0x00, 0x00,   0x00, 0x00, 0x00, 0x03, brgt, 0x00, blue, green, 
+                               red, 0x00, 0x00, 0x00, 0x00, 0x00, 0x64, 0x00,    0x64, 0x00, F[0], F[1], 0x00, 0x00, 0x00, 0x01, 
+                               0x02, }; 
+    //cc2520000000000000000003__00______000000000064006400____0000000102
+    unsigned char dir3[64] = { 0xcc, 0x25, 0x20, 0x00, 0x00, 0x00, 0x00, 0x00,   0x00, 0x00, 0x00, 0x03, brgt, 0x00, blue, green, 
+                               red, 0x00, 0x00, 0x00, 0x00, 0x00, 0x64, 0x00,    0x64, 0x00, F[0], F[1], 0x00, 0x00, 0x00, 0x01, 
+                               0x02, }; 
+    //cc2640000000000000000003__00______000000000064006400____0000000102
+    unsigned char dir4[64] = { 0xcc, 0x26, 0x40, 0x00, 0x00, 0x00, 0x00, 0x00,   0x00, 0x00, 0x00, 0x03, brgt, 0x00, blue, green, 
+                               red, 0x00, 0x00, 0x00, 0x00, 0x00, 0x64, 0x00,    0x64, 0x00, F[0], F[1], 0x00, 0x00, 0x00, 0x01, 
+                               0x02, }; 
+    //cc2780000000000000000003__00______000000000064006400____0000000102
+    unsigned char dir5[64] = { 0xcc, 0x27, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00,   0x00, 0x00, 0x00, 0x03, brgt, 0x00, blue, green, 
+                               red, 0x00, 0x00, 0x00, 0x00, 0x00, 0x64, 0x00,    0x64, 0x00, F[0], F[1], 0x00, 0x00, 0x00, 0x01, 
+                               0x02, }; 
+    //cc9100020000000000000003__00______000000000064006400____0000000102
+    unsigned char dir6[64] = { 0xcc, 0x91, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00,   0x00, 0x00, 0x00, 0x03, brgt, 0x00, blue, green, 
+                               red, 0x00, 0x00, 0x00, 0x00, 0x00, 0x64, 0x00,    0x64, 0x00, F[0], F[1], 0x00, 0x00, 0x00, 0x01, 
+                               0x02, }; 
+
+    counter = 0;
+    limit = 7;
+
+    if(64 != writeUsb(dir1))
+        return 1;
+
+    if(64 != writeUsb(dir2))
+        return 1;
+    
+    if(64 != writeUsb(dir3))
+        return 1;
+
+    if(64 != writeUsb(dir4))
+        return 1;
+
+    if(64 != writeUsb(dir5))
+        return 1;
+
+    if(64 != writeUsb(dir6))
+        return 1;
+
+    if(64 != writeUsb(end_transaction))
+        return 1;
+
+    printf("\rDouble flash (Separate) sequence sent\n");
+    
+    return 0;
+}
+
+int cycle(int intensity, int brightness){
+
+    unsigned char brgt;
+
+    switch (brightness){
+        case 0:
+            brgt = 0x1a;
+            break;
+        case 1:
+            brgt = 0x4d;
+            break;
+        case 2:
+            brgt = 0x80;
+            break;
+        case 3:
+            brgt = 0xb3;
+            break;
+        case 4:
+            brgt = 0xff;
+            break;
+        default:
+            printf("Brightness must be defined in range of 0..4\n");
+            return 1;
+    }
+
+    unsigned char *I;
+
+    switch (intensity){
+        case 0:
+            I = (unsigned char [4]) { 0x78, 0x05, 0xb0, 0x04 }; // 7805b004
+            break;
+        case 1:
+            I = (unsigned char [4]) { 0x52, 0x03, 0xee, 0x02 }; // 5203ee02
+            break;
+        case 2:
+            I = (unsigned char [4]) { 0x26, 0x02, 0xc2, 0x01 }; // 2602c201
+            break;
+        case 3:
+            I = (unsigned char [4]) { 0x58, 0x02, 0x90, 0x01 }; // 58029001
+            break;
+        case 4:
+            I = (unsigned char [4]) { 0x90, 0x01, 0xc8, 0x00 }; // 9001c800
+            break;
+        default:
+            printf("Intensity must be defined in range of 0..4\n");
+            return 1;
+    }
+    
+    counter = 0;
+    limit = 7;
+
+    //cc2204000000000000000004__00fd00fe0000000000________0000000007
+    unsigned char dir1[64] = { 0xcc, 0x22, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00,   0x00, 0x00, 0x00, 0x04, brgt, 0x00, 0xfd, 0x00, 
+                               0xfe, 0x00, 0x00, 0x00, 0x00, 0x00, I[0], I[1],   I[2], I[3], 0x00, 0x00, 0x00, 0x00, 0x07, };
+    //cc2410000000000000000004__00fd00fe0000000000________0000000007
+    unsigned char dir2[64] = { 0xcc, 0x24, 0x10, 0x00, 0x00, 0x00, 0x00, 0x00,   0x00, 0x00, 0x00, 0x04, brgt, 0x00, 0xfd, 0x00, 
+                               0xfe, 0x00, 0x00, 0x00, 0x00, 0x00, I[0], I[1],   I[2], I[3], 0x00, 0x00, 0x00, 0x00, 0x07, };
+    //cc2520000000000000000004__00fd00fe0000000000________0000000007                               
+    unsigned char dir3[64] = { 0xcc, 0x25, 0x20, 0x00, 0x00, 0x00, 0x00, 0x00,   0x00, 0x00, 0x00, 0x04, brgt, 0x00, 0xfd, 0x00, 
+                               0xfe, 0x00, 0x00, 0x00, 0x00, 0x00, I[0], I[1],   I[2], I[3], 0x00, 0x00, 0x00, 0x00, 0x07, };
+    //cc2640000000000000000004__00fd00fe0000000000________0000000007
+    unsigned char dir4[64] = { 0xcc, 0x26, 0x40, 0x00, 0x00, 0x00, 0x00, 0x00,   0x00, 0x00, 0x00, 0x04, brgt, 0x00, 0xfd, 0x00, 
+                               0xfe, 0x00, 0x00, 0x00, 0x00, 0x00, I[0], I[1],   I[2], I[3], 0x00, 0x00, 0x00, 0x00, 0x07, };
+    //cc2780000000000000000004__00fd00fe0000000000________0000000007 
+    unsigned char dir5[64] = { 0xcc, 0x27, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00,   0x00, 0x00, 0x00, 0x04, brgt, 0x00, 0xfd, 0x00, 
+                               0xfe, 0x00, 0x00, 0x00, 0x00, 0x00, I[0], I[1],   I[2], I[3], 0x00, 0x00, 0x00, 0x00, 0x07, };
+    //cc9100020000000000000004__00fd00fe0000000000________0000000007
+    unsigned char dir6[64] = { 0xcc, 0x91, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00,   0x00, 0x00, 0x00, 0x04, brgt, 0x00, 0xfd, 0x00, 
+                               0xfe, 0x00, 0x00, 0x00, 0x00, 0x00, I[0], I[1],   I[2], I[3], 0x00, 0x00, 0x00, 0x00, 0x07, };
+
+    if(64 != writeUsb(dir1))
+        return 1;
+
+    if(64 != writeUsb(dir2))
+        return 1;
+    
+    if(64 != writeUsb(dir3))
+        return 1;
+
+    if(64 != writeUsb(dir4))
+        return 1;
+
+    if(64 != writeUsb(dir5))
+        return 1;
+
+    if(64 != writeUsb(dir6))
+        return 1;
+
+    if(64 != writeUsb(end_transaction))
+        return 1;
+
+    printf("\rImpulse (Separate) sequence sent\n");
+    
+    return 0;
+}

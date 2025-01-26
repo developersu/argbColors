@@ -198,7 +198,7 @@ EXAMPLE:
 
 ---
 
-#### Flash (user selects: intensity, color and brightness)
+#### Flash (user selects: frequency, color and brightness)
 ```
                             ↓↓↓↓↓↓ - Color BGR
 cc2204000000000000000003__00______000000000064006400____0000000101
@@ -208,7 +208,7 @@ cc2640000000000000000003__00______000000000064006400____0000000101
 cc2780000000000000000003__00______000000000064006400____0000000101
 cc9100020000000000000003__00______000000000064006400____0000000101
 cc28ff07                ↑↑                          ↑↑↑↑                  
-                        ff → Intensity max          2003 → Brightness max      
+                        ff → Brightness max         2003 → Frequency max      
                         b3              -1          b004               -1
                         80              -2          4006               -2
                         4d              -3          d007               -3
@@ -219,7 +219,7 @@ EXAMPLE:
 
 ---
 
-#### Flash-double (user selects: brightness, color and intensity)
+#### Flash-double (user selects: brightness, color and frequency)
 ```
                             ↓↓↓↓↓↓ - Color BRG
 cc2204000000000000000003__00______000000000064006400____0000000102
@@ -229,7 +229,7 @@ cc2640000000000000000003__00______000000000064006400____0000000102
 cc2780000000000000000003__00______000000000064006400____0000000102
 cc9100020000000000000003__00______000000000064006400____0000000102
 cc28ff07                ↑↑                          ↑↑↑↑                       
-                        ff → Brightness max         e803 → Intensity max
+                        ff → Brightness max         e803 → Frequency max
                         b3               -1         7805              -1
                         80               -2         0807              -2
                         4d               -3         9808              -3

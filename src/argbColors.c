@@ -132,6 +132,12 @@ int main(int argc, char *argv[]) {
         return -1;
     }
 
+    if (cycle(0, 4)){
+        printf("Command transfer failure\n");
+        libusb_close(dev_handle);
+        return -1;
+    }
+/*
     if (impulse(0, 0xff, 0x2f, 0xff)){
         printf("Command transfer failure\n");
         libusb_close(dev_handle);
