@@ -1,3 +1,5 @@
+#include "helpers.c"
+
 int writeUsb(unsigned char *message){
 #ifndef DEBUG
     printf("\r%02d / %02d (write)", ++counter, limit);
