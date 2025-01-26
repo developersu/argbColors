@@ -26,7 +26,8 @@ int readUsb(){
     }
     
 #ifdef DEBUG
-    printf("INPUT REQUEST\n");
+    printf("INPUT RESPONSE:\n");
+    print_array(buffer, 64);
 #endif
 
     return ret;

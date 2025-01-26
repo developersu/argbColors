@@ -61,17 +61,17 @@ int staticColorSeparate(unsigned char brightness, unsigned char red, unsigned ch
 
     counter = 0;
     limit = 7;
-    //cc 22 04 00 00 00 00 00 00 00 00 01__00______ 
+    //cc 22 04 00 00 00 00 00 00 00 00 01 __ 00 __ __ __ 
     unsigned char dir1[64] = { 0xcc, 0x22, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00,   0x00, 0x00, 0x00, 0x01, brightness, 0x00, blue, green, red, };
-    //cc 24 10 00 00 00 00 00 00 00 00 01__00______
+    //cc 24 10 00 00 00 00 00 00 00 00 01 __ 00 __ __ __ 
     unsigned char dir2[64] = { 0xcc, 0x24, 0x10, 0x00, 0x00, 0x00, 0x00, 0x00,   0x00, 0x00, 0x00, 0x01, brightness, 0x00, blue, green, red, };
-    //cc 25 20 00 00 00 00 00 00 00 00 01__00______
+    //cc 25 20 00 00 00 00 00 00 00 00 01 __ 00 __ __ __ 
     unsigned char dir3[64] = { 0xcc, 0x25, 0x20, 0x00, 0x00, 0x00, 0x00, 0x00,   0x00, 0x00, 0x00, 0x01, brightness, 0x00, blue, green, red, };
-    //cc 26 40 00 00 00 00 00 00 00 00 01__00______
+    //cc 26 40 00 00 00 00 00 00 00 00 01 __ 00 __ __ __ 
     unsigned char dir4[64] = { 0xcc, 0x26, 0x40, 0x00, 0x00, 0x00, 0x00, 0x00,   0x00, 0x00, 0x00, 0x01, brightness, 0x00, blue, green, red, };
-    //cc 27 80 00 00 00 00 00 00 00 00 01__00______
+    //cc 27 80 00 00 00 00 00 00 00 00 01 __ 00 __ __ __ 
     unsigned char dir5[64] = { 0xcc, 0x27, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00,   0x00, 0x00, 0x00, 0x01, brightness, 0x00, blue, green, red, };
-    //cc 91 00 02 00 00 00 00 00 00 00 01__00______
+    //cc 91 00 02 00 00 00 00 00 00 00 01 __ 00 __ __ __ 
     unsigned char dir6[64] = { 0xcc, 0x91, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00,   0x00, 0x00, 0x00, 0x01, brightness, 0x00, blue, green, red, };
     
     if(64 != writeUsb(dir1))
@@ -214,3 +214,106 @@ int wave2(){
     
     return 0;
 }
+
+int staticColorSync(unsigned char red, unsigned char green, unsigned char blue){
+    if (prefix())
+        return 1;
+
+    counter = 0;
+    limit = 2;
+    
+    //cc 20 ff 07 00 00 00 00 00 00 00 01 ff 00 __ __ __
+    unsigned char dir1[64] = { 0xcc, 0x20, 0xff, 0x07, 0x00, 0x00, 0x00, 0x00,   0x00, 0x00, 0x00, 0x01, 0xff, 0x00, blue, green, red, };
+
+    if(64 != writeUsb(dir1))
+        return 1;
+
+    if(64 != writeUsb(end_transaction))
+        return 1;
+    
+    printf("\rStatic Color (Sync) sequence sent\n");
+    
+    return 0;
+}
+
+int impulse(int intensity, unsigned char red, unsigned char green, unsigned char blue){
+
+    unsigned char *I;
+
+    switch (intensity){
+        case 0:
+            I = (unsigned char [6]) { 0x40, 0x06, 0x40, 0x06, 0x20, 0x03 }; // 400640062003
+            break;
+        case 1:
+            I = (unsigned char [6]) { 0xb0, 0x04, 0xb0, 0x04, 0xf4, 0x01 }; // b004b004f401
+            break;
+        case 2:
+            I = (unsigned char [6]) { 0x84, 0x03, 0x84, 0x03, 0xc2, 0x01 }; // 84038403c201
+            break;
+        case 3:
+            I = (unsigned char [6]) { 0xbc, 0x02, 0xbc, 0x02, 0x5e, 0x01 }; // bc02bc025e01
+            break;
+        case 4:
+            I = (unsigned char [6]) { 0xf4, 0x01, 0xf4, 0x01, 0xfa, 0x00 }; // f401f401fa00
+            break;
+        default:
+            printf("Intensity must be defined in range of 0..4\n");
+            return 1;
+    }
+
+    if (prefix())
+        return 1;
+
+    counter = 0;
+    limit = 7;
+
+    //cc22040000000000000000026400______0000000000____________00000001
+    unsigned char dir1[64] = {  0xcc, 0x22, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00,   0x00, 0x00, 0x00, 0x02, 0x64, 0x00, blue, green, 
+                                 red, 0x00, 0x00, 0x00, 0x00, 0x00, I[0], I[1],   I[2], I[3], I[4], I[5], 0x00, 0x00, 0x00, 0x01, };
+    //cc24100000000000000000026400______0000000000____________00000001
+    unsigned char dir2[64] = {  0xcc, 0x24, 0x10, 0x00, 0x00, 0x00, 0x00, 0x00,   0x00, 0x00, 0x00, 0x02, 0x64, 0x00, blue, green, 
+                                 red, 0x00, 0x00, 0x00, 0x00, 0x00, I[0], I[1],   I[2], I[3], I[4], I[5], 0x00, 0x00, 0x00, 0x01, };
+    //cc25200000000000000000026400______0000000000____________00000001
+    unsigned char dir3[64] = {  0xcc, 0x25, 0x20, 0x00, 0x00, 0x00, 0x00, 0x00,   0x00, 0x00, 0x00, 0x02, 0x64, 0x00, blue, green, 
+                                 red, 0x00, 0x00, 0x00, 0x00, 0x00, I[0], I[1],   I[2], I[3], I[4], I[5], 0x00, 0x00, 0x00, 0x01, };
+    //cc26400000000000000000026400______0000000000____________00000001  
+    unsigned char dir4[64] = {  0xcc, 0x26, 0x40, 0x00, 0x00, 0x00, 0x00, 0x00,   0x00, 0x00, 0x00, 0x02, 0x64, 0x00, blue, green, 
+                                 red, 0x00, 0x00, 0x00, 0x00, 0x00, I[0], I[1],   I[2], I[3], I[4], I[5], 0x00, 0x00, 0x00, 0x01, };
+    //cc27800000000000000000026400______0000000000____________00000001
+    unsigned char dir5[64] = {  0xcc, 0x27, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00,   0x00, 0x00, 0x00, 0x02, 0x64, 0x00, blue, green, 
+                                 red, 0x00, 0x00, 0x00, 0x00, 0x00, I[0], I[1],   I[2], I[3], I[4], I[5], 0x00, 0x00, 0x00, 0x01, };
+    //cc91000200000000000000026400______0000000000____________00000001
+    unsigned char dir6[64] = {  0xcc, 0x91, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00,   0x00, 0x00, 0x00, 0x02, 0x64, 0x00, blue, green, 
+                                 red, 0x00, 0x00, 0x00, 0x00, 0x00, I[0], I[1],   I[2], I[3], I[4], I[5], 0x00, 0x00, 0x00, 0x01, };
+
+    if(64 != writeUsb(dir1))
+        return 1;
+
+    if(64 != writeUsb(dir2))
+        return 1;
+    
+    if(64 != writeUsb(dir3))
+        return 1;
+
+    if(64 != writeUsb(dir4))
+        return 1;
+
+    if(64 != writeUsb(dir5))
+        return 1;
+
+    if(64 != writeUsb(dir6))
+        return 1;
+
+    if(64 != writeUsb(end_transaction))
+        return 1;
+
+    printf("\rImpulse (Separate) sequence sent\n");
+    
+    return 0;
+}
+
+
+// Impulse
+// Flash
+// 2xFlash
+// Cycle

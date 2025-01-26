@@ -26,7 +26,7 @@ int findDevice(libusb_device *dev){
     }
 
     if (desc.idVendor == VID && desc.idProduct == PID){
-        printf("Found VID:PID device: %04x:%04x\n", desc.idVendor, desc.idProduct);
+        printf("Device found: %04x:%04x\n", desc.idVendor, desc.idProduct);
         return 1;
     }
 
@@ -76,8 +76,10 @@ int main(int argc, char *argv[]) {
     }
 
     // We will rule, not kernel modules :D
-    printf("libusb_set_auto_detach_kernel_driver - %d\n", libusb_set_auto_detach_kernel_driver(dev_handle, 1));
-    
+    ret = libusb_set_auto_detach_kernel_driver(dev_handle, 1);
+#ifdef DEBUG
+    printf("libusb_set_auto_detach_kernel_driver - %d\n", ret);
+
     // Let's find out current CONFIGURATION
     int bConfigurationValue;
     ret = libusb_get_configuration(dev_handle, &bConfigurationValue);
@@ -86,17 +88,19 @@ int main(int argc, char *argv[]) {
         printf("libusb_get_configuration failed: %d\n", ret);
         return ret;
     }
+
     printf("Current bConfigurationValue: %d\n", bConfigurationValue);
-
-    // if device used by kernel drivers already
+#endif
+    // Check if device used by kernel drivers already
     ret = libusb_kernel_driver_active(dev_handle, 1);
-    printf("libusb_kernel_driver_active: %d\n", ret);
-
+    printf("Kernel driver is%s", ret == 0?" not active\n":"active and ");
+    
+    // Active? Let's try to get control
     if(ret != LIBUSB_ERROR_NOT_SUPPORTED && ret < 0){
         ret = libusb_detach_kernel_driver(dev_handle, 1);
         if (ret != LIBUSB_ERROR_NOT_SUPPORTED && ret < 0) {
             libusb_exit(NULL);
-            printf("libusb_detach_kernel_driver failed: %d\n", ret);
+            printf("detach kernel driver attempt failed: %d\n", ret);
             return ret;
         }
     }
@@ -128,12 +132,19 @@ int main(int argc, char *argv[]) {
         return -1;
     }
 
+    if (impulse(0, 0xff, 0x2f, 0xff)){
+        printf("Command transfer failure\n");
+        libusb_close(dev_handle);
+        return -1;
+    }
+/*
+    // 0xff, 0x2f, 0xff <3
     if(staticColorSeparate(0xff, 0xff, 0x2b, 0x00)){
         printf("Command transfer failure\n");
         libusb_close(dev_handle);
         return -1;
     }
-
+//*/
     if (terminate_sequence()){
         printf("Termination sequence transfer failure\n");
         libusb_close(dev_handle);
