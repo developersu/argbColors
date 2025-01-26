@@ -336,7 +336,7 @@ int flash(int brightness, int frequency, unsigned char red, unsigned char green,
             brgt = 0xff;
             break;
         default:
-            printf("Intensity must be defined in range of 0..4\n");
+            printf("Brightness must be defined in range of 0..4\n");
             return 1;
     }
 
@@ -359,7 +359,7 @@ int flash(int brightness, int frequency, unsigned char red, unsigned char green,
             F = (unsigned char [2]) { 0x20, 0x03 }; // 2003
             break;
         default:
-            printf("Brightness must be defined in range of 0..4\n");
+            printf("Frequency must be defined in range of 0..4\n");
             return 1;
     }
 
