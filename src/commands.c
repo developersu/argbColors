@@ -1,5 +1,3 @@
-#include "iousb.c"
-
 unsigned char end_transaction[64] = { 0xcc, 0x28, 0xff, 0x07, }; //cc28ff07
 unsigned char end_alt_transaction[64] = { 0xcc, 0x28, 0x04, };   //cc2804
 
