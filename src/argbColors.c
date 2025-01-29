@@ -19,9 +19,13 @@
 #include "init_terminate.c"
 #include "commands.c"
 #include "iousb.c"
+
+unsigned int red, green, blue;
+
 const char *argp_program_version = "argbColor 0.1";
 const char *argp_program_bug_address = "https://github.com/developersu/argbColors/issues/";
-static char doc[] = "Application for adjusting backlight";
+static char doc[] = "-s COMMAND\n-e SOMETHING-SOMETHING";
+static char doc1[] = "apply sync or separate command\vFIXME LATER ON PLEASE";
 
 static struct argp_option options[] = {
   {"sync",       's', "COMMAND",   0, "Synchronized command" },
@@ -67,7 +71,7 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state){
     return 0;
 }
 
-static struct argp argp = { options, parse_opt, 0, doc };
+static struct argp argp = { options, parse_opt, doc, doc1 };
 
 int parse_color(char *color, unsigned int *red, unsigned int *green, unsigned int *blue ){
     printf("%s\n", color);
@@ -86,9 +90,22 @@ int parse_color(char *color, unsigned int *red, unsigned int *green, unsigned in
     return -1;
 }
 
-int parse_brightness(){
-    // TODO
+int sync_flow(char* directive){
+    if (strcmp(directive, "wave") == 0)
+        return wave1();
+    else if (strcmp(directive, "wave2") == 0)
+        return wave2();
+    else if (strcmp(directive, "off") == 0)
+        return turnOffBacklightSync();
+    else if (strcmp(directive, "off") == 0)
+        return staticColorSync(red, green, blue);
+    else{
+        printf("Command not recognized\n");
+        return staticColorSync(red, green, blue);       // TODO: refactor; leave information block and nothing instead
+    }
 }
+
+
 
 int main(int argc, char *argv[]) {
 
@@ -104,7 +121,9 @@ int main(int argc, char *argv[]) {
         be reflected in arguments. */
     argp_parse(&argp, argc, argv, 0, 0, &arguments);
 
-    unsigned int red, green, blue;
+    if (arguments.quiet)
+        freopen("/dev/null", "a", stdout);
+
     if (parse_color(arguments.color, &red, &green, &blue) != 0){
         printf("Color parse failure\n");
         return -1;
@@ -129,49 +148,42 @@ int main(int argc, char *argv[]) {
         return -1;
     }
     // - - - - - - - - - - - - - -
-    if ((strcmp(arguments.sync, "-") == 0) && (strcmp(arguments.separate, "-") == 0)){
-        if(staticColorSync(red, green, blue)){
+    if (strcmp(arguments.sync, "-") != 0){              // Sync flow
+        if (sync_flow(arguments.sync)){
             printf("Command transfer failure\n");
             libusb_close(dev_handle);
             return -1;
         }
     }
-    else if (strcmp(arguments.sync, "wave1") == 0){
-        if(wave1()){
+    else if (strcmp(arguments.separate, "-") != 0){    // Separate flow
+        if(staticColorSync(red, green, blue)){         // TODO: FIX!
             printf("Command transfer failure\n");
             libusb_close(dev_handle);
             return -1;
         }
-    }
-    else if (strcmp(arguments.sync, "wave2") == 0){
-        if(wave2()){
-            printf("Command transfer failure\n");
-            libusb_close(dev_handle);
-            return -1;
-        }
+
+        /*
+            if (cycle(0, 4)){
+                printf("Command transfer failure\n");
+                libusb_close(dev_handle);
+                return -1;
+            }
+
+            if (impulse(0, 0xff, 0x2f, 0xff)){
+                printf("Command transfer failure\n");
+                libusb_close(dev_handle);
+                return -1;
+            }
+        //*/
     }
     else{
-        if(staticColorSync(red, green, blue)){
+        if(staticColorSync(red, green, blue)){          // Executed neither for sync, nor for separate => set single color
             printf("Command transfer failure\n");
             libusb_close(dev_handle);
             return -1;
         }
     }
-/*
-    if (cycle(0, 4)){
-        printf("Command transfer failure\n");
-        libusb_close(dev_handle);
-        return -1;
-    }
-
-    if (impulse(0, 0xff, 0x2f, 0xff)){
-        printf("Command transfer failure\n");
-        libusb_close(dev_handle);
-        return -1;
-    }
-//*/
     
-
     if (terminate_sequence()){
         printf("Termination sequence transfer failure\n");
         libusb_close(dev_handle);
