@@ -21,22 +21,18 @@
 #include "iousb.c"
 const char *argp_program_version = "argbColor 0.1";
 const char *argp_program_bug_address = "https://github.com/developersu/argbColors/issues/";
-static char doc[] = "TODO \
-TODO \
-there should be a well structed description one day";
+static char doc[] = "Application for adjusting backlight";
 
-static char args_doc[] = "ARG1";
 static struct argp_option options[] = {
-  {"sync",       's', "COMMAND",   0, "Bypass synchronized command" },
-  {"separate",   'e', "COMMAND",   0, "Bypass separate command(s)" },
-  {"color",      'c', "RGB_COLOR", 0, "Define color" },
-  {"brightness", 'b', "VALUE",     0, "Define brightness" },
-  {"quiet",    'q', 0,             0, "Don't produce any output" },
+  {"sync",       's', "COMMAND",   0, "Synchronized command" },
+  {"separate",   'e', "COMMAND",   0, "Separate command(s)" },
+  {"color",      'c', "RGB_COLOR", 0, "Define color (000000..ffffff)" },
+  {"brightness", 'b', "VALUE",     0, "Define brightness (0..5)" },
+  {"quiet",      'q', 0,           0, "Don't produce any output" },
   { 0 }
 };
 
 struct arguments{
-  char *args[1];
   int quiet;
   char *sync;
   char *separate;
@@ -65,27 +61,13 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state){
     case 'b':
         arguments->brightness = arg;
         break;
-
-    case ARGP_KEY_ARG:
-        if (state->arg_num >= 1) /* Too many arguments. */
-        argp_usage(state);
-
-        arguments->args[state->arg_num] = arg;
-
-        break;
-
-    case ARGP_KEY_END:
-        if (state->arg_num < 1) /* Not enough arguments. */
-        argp_usage(state);
-        break;
-
     default:
         return ARGP_ERR_UNKNOWN;
     }  
     return 0;
 }
 
-static struct argp argp = { options, parse_opt, args_doc, doc };
+static struct argp argp = { options, parse_opt, 0, doc };
 
 int parse_color(char *color, unsigned int *red, unsigned int *green, unsigned int *blue ){
     printf("%s\n", color);
@@ -122,20 +104,18 @@ int main(int argc, char *argv[]) {
         be reflected in arguments. */
     argp_parse(&argp, argc, argv, 0, 0, &arguments);
 
-    printf("ARG1 = %s\nSYNC = %s\nSEPARATE = %s\nCOLOR = %s\n"
-           "QUIET = %s\n",
-           arguments.args[0], arguments.args[1],
-           arguments.sync,
-           arguments.separate,
-           arguments.color,
-           arguments.quiet ? "yes" : "no");    
-
     unsigned int red, green, blue;
-
     if (parse_color(arguments.color, &red, &green, &blue) != 0){
         printf("Color parse failure\n");
         return -1;
     }
+    
+    int brightness = atoi(arguments.brightness);
+    if (brightness > 5)
+        brightness = 0;
+
+    printf("%s\n", arguments.sync);
+    
     // - - -
     int ret = configure_device();
     if (ret != 0){
@@ -147,6 +127,35 @@ int main(int argc, char *argv[]) {
         printf("Initial sequence transfer failure\n");
         libusb_close(dev_handle);
         return -1;
+    }
+    // - - - - - - - - - - - - - -
+    if ((strcmp(arguments.sync, "-") == 0) && (strcmp(arguments.separate, "-") == 0)){
+        if(staticColorSync(red, green, blue)){
+            printf("Command transfer failure\n");
+            libusb_close(dev_handle);
+            return -1;
+        }
+    }
+    else if (strcmp(arguments.sync, "wave1") == 0){
+        if(wave1()){
+            printf("Command transfer failure\n");
+            libusb_close(dev_handle);
+            return -1;
+        }
+    }
+    else if (strcmp(arguments.sync, "wave2") == 0){
+        if(wave2()){
+            printf("Command transfer failure\n");
+            libusb_close(dev_handle);
+            return -1;
+        }
+    }
+    else{
+        if(staticColorSync(red, green, blue)){
+            printf("Command transfer failure\n");
+            libusb_close(dev_handle);
+            return -1;
+        }
     }
 /*
     if (cycle(0, 4)){
@@ -161,11 +170,7 @@ int main(int argc, char *argv[]) {
         return -1;
     }
 //*/
-    if(staticColorSync(red, green, blue)){
-        printf("Command transfer failure\n");
-        libusb_close(dev_handle);
-        return -1;
-    }
+    
 
     if (terminate_sequence()){
         printf("Termination sequence transfer failure\n");
