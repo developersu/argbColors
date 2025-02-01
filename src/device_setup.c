@@ -9,7 +9,9 @@ int findDevice(libusb_device *dev){
     }
 
     if (desc.idVendor == VID && desc.idProduct == PID){
-        printf("Device found: %04x:%04x\n", desc.idVendor, desc.idProduct);
+        if (verbose_output){
+            printf("Device found: %04x:%04x\n", desc.idVendor, desc.idProduct);
+        }
         return 1;
     }
 
@@ -76,8 +78,10 @@ int configure_device(){
 #endif
     // Check if device used by kernel drivers already
     ret = libusb_kernel_driver_active(dev_handle, 1);
+#ifdef DEBUG
     printf("Kernel driver is%s", ret == 0?" not active\n":"active and ");
-    
+#endif
+
     // Active? Let's try to get control
     if(ret != LIBUSB_ERROR_NOT_SUPPORTED && ret < 0){
         ret = libusb_detach_kernel_driver(dev_handle, 1);

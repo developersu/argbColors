@@ -13,7 +13,6 @@
 
 #include "libusb-1.0/libusb.h"
 
-
 #include "configuration.h"
 #include "device_setup.c"
 #include "init_terminate.c"
@@ -28,18 +27,20 @@ static char doc[] = "-s COMMAND\n-e SOMETHING-SOMETHING";
 static char doc1[] = "apply sync or separate command\vFIXME LATER ON PLEASE";
 
 static struct argp_option options[] = {
-  {"sync",       's', "COMMAND",   0, "Synchronized command" },
-  {"separate",   'e', "COMMAND",   0, "Separate command(s)" },
+  {"sync",       's', 0,           0, "Synchronized command" },
+  {"separate",   'e', 0,           0, "Separate command(s)" },
   {"color",      'c', "RGB_COLOR", 0, "Define color (000000..ffffff)" },
   {"brightness", 'b', "VALUE",     0, "Define brightness (0..5)" },
-  {"quiet",      'q', 0,           0, "Don't produce any output" },
+  {"quiet",      'q', 0,           0, "Mute output" },
+  {"verbose",    'v', 0,           0, "Verbose output" },
   { 0 }
 };
 
 struct arguments{
+  char *args[1];
   int quiet;
-  char *sync;
-  char *separate;
+  int sync;
+  int separate;
   char *color;
   char *brightness;
 };
@@ -49,32 +50,44 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state){
        know is a pointer to our arguments structure. */
     struct arguments *arguments = state->input;
 
-    switch (key){ 
-    case 'q':
-        arguments->quiet = 1;
+    switch (key) {
+        case 'q':
+            arguments->quiet = 1;
+            break;
+        case 's':
+            arguments->sync = 1;
+            break;
+        case 'e':
+            arguments->separate = 1;
+            break;
+        case 'c':
+            arguments->color = arg;
+            break;
+        case 'b':
+            arguments->brightness = arg;
+            break;
+        case 'v':
+            verbose_output = 1;
+        case ARGP_KEY_ARG:
+        if (state->arg_num >= 1) // Too many arguments
+            argp_usage (state);
+        arguments->args[state->arg_num] = arg;
         break;
-    case 's':
-        arguments->sync = arg;
+/*
+        case ARGP_KEY_END:
+        if (state->arg_num < 1) // Not enough arguments
+            argp_usage (state);
         break;
-    case 'e':
-        arguments->separate = arg;
-        break;
-    case 'c':
-        arguments->color = arg;
-        break;
-    case 'b':
-        arguments->brightness = arg;
-        break;
-    default:
-        return ARGP_ERR_UNKNOWN;
-    }  
+*/
+        default:
+            return ARGP_ERR_UNKNOWN;
+    }
     return 0;
 }
 
 static struct argp argp = { options, parse_opt, doc, doc1 };
 
 int parse_color(char *color, unsigned int *red, unsigned int *green, unsigned int *blue ){
-    printf("%s\n", color);
     if (strlen(color) != 6)
         return -1;
 
@@ -95,12 +108,14 @@ int sync_flow(char* directive){
         return wave1();
     else if (strcmp(directive, "wave2") == 0)
         return wave2();
+    else if (strcmp(directive, "color") == 0)
+        return staticColorSync(red, green, blue);
     else if (strcmp(directive, "off") == 0)
         return turnOffBacklightSync();
-    else if (strcmp(directive, "off") == 0)
-        return staticColorSync(red, green, blue);
     else{
-        printf("Command not recognized\n");
+        printf("Command not recognized\n"
+               "Possible values are: wave wave2 color off\n");
+
         return staticColorSync(red, green, blue);       // TODO: refactor; leave information block and nothing instead
     }
 }
@@ -112,8 +127,8 @@ int main(int argc, char *argv[]) {
     struct arguments arguments;
     /* Default values. */
     arguments.quiet = 0;
-    arguments.sync = "-";
-    arguments.separate = "-";
+    arguments.sync = 0;
+    arguments.separate = 0;
     arguments.color = "ff2fff";
     arguments.brightness = "5";
 
@@ -124,6 +139,11 @@ int main(int argc, char *argv[]) {
     if (arguments.quiet)
         freopen("/dev/null", "a", stdout);
 
+    if (arguments.sync == arguments.separate == 1){
+        printf("Only one option must be defined: '-s' or '-e'\n");
+        return -1;
+    }
+
     if (parse_color(arguments.color, &red, &green, &blue) != 0){
         printf("Color parse failure\n");
         return -1;
@@ -133,29 +153,33 @@ int main(int argc, char *argv[]) {
     if (brightness > 5)
         brightness = 0;
 
-    printf("%s\n", arguments.sync);
-    
     // - - -
     int ret = configure_device();
     if (ret != 0){
         printf("%s - %d\n", libusb_error_name(ret), ret);
         return -1;
     }
+    if (verbose_output)
+        printf("Device configuration complete\n");
 
     if (init_sequence()){
         printf("Initial sequence transfer failure\n");
         libusb_close(dev_handle);
         return -1;
     }
-    // - - - - - - - - - - - - - -
-    if (strcmp(arguments.sync, "-") != 0){              // Sync flow
-        if (sync_flow(arguments.sync)){
+    if (verbose_output)
+        printf("Initialization sequence sent\n");
+
+    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+    if (arguments.sync == 1){                          // Sync flow
+        if (sync_flow(arguments.args[0])){
             printf("Command transfer failure\n");
             libusb_close(dev_handle);
             return -1;
         }
     }
-    else if (strcmp(arguments.separate, "-") != 0){    // Separate flow
+    else if (arguments.separate == 0){                 // Separate flow
         if(staticColorSync(red, green, blue)){         // TODO: FIX!
             printf("Command transfer failure\n");
             libusb_close(dev_handle);
@@ -189,7 +213,9 @@ int main(int argc, char *argv[]) {
         libusb_close(dev_handle);
         return -1;
     }
-    
+    if (verbose_output)
+        printf("Termination sequence sent\n");
+
     libusb_close(dev_handle);
 
     return 0;

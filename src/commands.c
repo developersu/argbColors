@@ -95,7 +95,7 @@ int staticColorSeparate(unsigned char brightness, unsigned char red, unsigned ch
     if(64 != writeUsb(end_transaction))
         return 1;
     
-    printf("\rStatic Color (Separate) sequence sent\n");
+    printf("One color (Separate) applied\n");
     
     return 0;
 }
@@ -141,7 +141,7 @@ int turnOffBacklight(){
     if(64 != writeUsb(end_transaction))
         return 1;
 
-    printf("\rTurn off backlight (Separate) sequence sent\n");
+    printf("Turn off backlight (Separate) applied\n");
     
     return 0;
 }
@@ -162,7 +162,7 @@ int turnOffBacklightSync(){
     if(64 != writeUsb(end_transaction))
         return 1;
 
-    printf("\rTurn off backlight (Sync) sequence sent\n");
+    printf("Turn off backlight (Sync) applied\n");
     
     return 0;
 }
@@ -186,7 +186,7 @@ int wave1(){
     if(64 != writeUsb(end_alt_transaction))
         return 1;
 
-    printf("\rWave 1 (Sync) sequence sent\n");
+    printf("Wave (Sync) applied\n");
     
     return 0;
 }
@@ -210,7 +210,7 @@ int wave2(){
     if(64 != writeUsb(end_alt_transaction))
         return 1;
 
-    printf("\rWave 2 (Sync) sequence sent\n");
+    printf("Wave 2 (Sync) applied\n");
     
     return 0;
 }
@@ -231,7 +231,7 @@ int staticColorSync(unsigned char red, unsigned char green, unsigned char blue){
     if(64 != writeUsb(end_transaction))
         return 1;
     
-    printf("\rStatic Color (Sync) sequence sent\n");
+    printf("One color (Sync) applied\n");
     
     return 0;
 }
@@ -307,7 +307,7 @@ int impulse(int intensity, unsigned char red, unsigned char green, unsigned char
     if(64 != writeUsb(end_transaction))
         return 1;
 
-    printf("\rImpulse (Separate) sequence sent\n");
+    printf("Impulse (Separate) applied\n");
     
     return 0;
 }
@@ -407,7 +407,7 @@ int flash(int brightness, int frequency, unsigned char red, unsigned char green,
     if(64 != writeUsb(end_transaction))
         return 1;
 
-    printf("\rFlash (Separate) sequence sent\n");
+    printf("Flash (Separate) applied\n");
     
     return 0;
 }
@@ -509,7 +509,7 @@ int doubleFlash(int brighness, int frequency, unsigned char red, unsigned char g
     if(64 != writeUsb(end_transaction))
         return 1;
 
-    printf("\rDouble flash (Separate) sequence sent\n");
+    printf("Double flash (Separate) applied\n");
     
     return 0;
 }
@@ -605,7 +605,7 @@ int cycle(int intensity, int brightness){
     if(64 != writeUsb(end_transaction))
         return 1;
 
-    printf("\rImpulse (Separate) sequence sent\n");
+    printf("Impulse (Separate) applied\n");
     
     return 0;
 }

@@ -68,8 +68,6 @@ int init_sequence(){
     if(64 != writeUsb(message))
         return 1;
     
-    printf("\rInitialization sequence sent\n");
-    
     return 0;
 }
 
@@ -80,8 +78,6 @@ int terminate_sequence(){
     unsigned char message[64] = { 0xcc, 0x47, 0x01, }; //cc4701
     if(64 != writeUsb(message))
         return 1;
-    
-    printf("\rTermination sequence sent\n");
 
     return 0;
 }

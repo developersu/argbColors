@@ -2,7 +2,8 @@
 
 int writeUsb(unsigned char *message){
 #ifndef DEBUG
-    printf("\r%02d / %02d (write)", ++counter, limit);
+    if (verbose_output)
+        printf("\r[%02d / %02d] write - ", ++counter, limit);
 #endif
 #ifdef DEBUG
     print_array(message, 64);
@@ -17,7 +18,8 @@ int writeUsb(unsigned char *message){
 
 int readUsb(){
 #ifndef DEBUG
-    printf("\r%02d / %02d (read)", ++counter, limit);
+    if (verbose_output)
+        printf("\r[%02d / %02d] read - ", ++counter, limit);
 #endif
     
     unsigned char buffer[64] = {};
