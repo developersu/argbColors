@@ -1,9 +1,9 @@
-# argb controls for 048d:5711 Integrated Technology Express, Inc. GIGABYTE Device 
+# argb-colors is application for backlight adjusting. Created for VID:PID=048d:5711
 
 
 [![status-badge](https://ci.redrise.ru/api/badges/13/status.svg)](https://ci.redrise.ru/repos/13)
 
-Reference hardware used: Z890 AORUS PRO ICE
+Reference hardware used: Z890 AORUS PRO ICE, 048d:5711 Integrated Technology Express, Inc. GIGABYTE Device 
 
 ### udev rules
 

@@ -1,10 +1,10 @@
 CC = gcc
 MKDIR_P = mkdir -p
-APP_NAME = argbColors
+APP_NAME = argb-colors
 
 all: $(APP_NAME)
 
-argbColors: ./src/$(APP_NAME).c
+argb-colors: ./src/$(APP_NAME).c
 	$(MKDIR_P) ./bin
 	$(CC) -std=c17 -I/usr/include/ ./src/$(APP_NAME).c -lusb-1.0 -o ./bin/$(APP_NAME)
 

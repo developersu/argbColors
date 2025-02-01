@@ -13,7 +13,7 @@
 
 #include "libusb-1.0/libusb.h"
 
-#include "argbColors.h"
+#include "argb-colors.h"
 #include "configuration.h"
 #include "device_setup.c"
 #include "init_terminate.c"
@@ -56,7 +56,9 @@ int sync_flow(char* directive){
 }
 
 int separate_flow(){
-
+    
+    printf("Command not recognized\n"
+           "Possible values are: color off impulse flash flash2 cycle\n");
 }
 
 
