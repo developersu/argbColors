@@ -1,7 +1,5 @@
 # Uh, umm... well... let's call it specification of the 048d:5711 Integrated Technology Express, Inc. GIGABYTE Device
 
-#### Document structure
-
 **USB control transfer used**
 
 (and USB HID a bit 🤓)
@@ -157,9 +155,9 @@ cc9100020000000000000001__00______
 cc28ff07                ↑↑
                         ff → Brightness max
                         b3               -1
-			80               -2
-			4d               -3
-			1a               -4
+                        80               -2
+                        4d               -3
+                        1a               -4
 ```
 EXAMPLE:
 `cc2204000000000000000001ff00ffffff0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000`
