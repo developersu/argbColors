@@ -78,9 +78,9 @@ int configure_device(){
 #endif
     // Check if device used by kernel drivers already
     ret = libusb_kernel_driver_active(dev_handle, 1);
-#ifdef DEBUG
-    printf("Kernel driver is%s", ret == 0?" not active\n":"active and ");
-#endif
+    if (verbose_output)
+        printf("Kernel driver is%s", ret == 0?" not active\n":"active and ");
+
 
     // Active? Let's try to get control
     if(ret != LIBUSB_ERROR_NOT_SUPPORTED && ret < 0){
