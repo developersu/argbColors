@@ -13,6 +13,7 @@
 
 #include "libusb-1.0/libusb.h"
 
+#include "argbColors.h"
 #include "configuration.h"
 #include "device_setup.c"
 #include "init_terminate.c"
@@ -20,72 +21,6 @@
 #include "iousb.c"
 
 unsigned int red, green, blue;
-
-const char *argp_program_version = "argbColor 0.1";
-const char *argp_program_bug_address = "https://github.com/developersu/argbColors/issues/";
-static char doc[] = "-s COMMAND\n-e SOMETHING-SOMETHING";
-static char doc1[] = "apply sync or separate command\vFIXME LATER ON PLEASE";
-
-static struct argp_option options[] = {
-  {"sync",       's', 0,           0, "Synchronized command" },
-  {"separate",   'e', 0,           0, "Separate command(s)" },
-  {"color",      'c', "RGB_COLOR", 0, "Define color (000000..ffffff)" },
-  {"brightness", 'b', "VALUE",     0, "Define brightness (0..5)" },
-  {"quiet",      'q', 0,           0, "Mute output" },
-  {"verbose",    'v', 0,           0, "Verbose output" },
-  { 0 }
-};
-
-struct arguments{
-  char *args[1];
-  int quiet;
-  int sync;
-  int separate;
-  char *color;
-  char *brightness;
-};
-
-static error_t parse_opt(int key, char *arg, struct argp_state *state){
-    /* Get the input argument from argp_parse, which we
-       know is a pointer to our arguments structure. */
-    struct arguments *arguments = state->input;
-
-    switch (key) {
-        case 'q':
-            arguments->quiet = 1;
-            break;
-        case 's':
-            arguments->sync = 1;
-            break;
-        case 'e':
-            arguments->separate = 1;
-            break;
-        case 'c':
-            arguments->color = arg;
-            break;
-        case 'b':
-            arguments->brightness = arg;
-            break;
-        case 'v':
-            verbose_output = 1;
-        case ARGP_KEY_ARG:
-        if (state->arg_num >= 1) // Too many arguments
-            argp_usage (state);
-        arguments->args[state->arg_num] = arg;
-        break;
-/*
-        case ARGP_KEY_END:
-        if (state->arg_num < 1) // Not enough arguments
-            argp_usage (state);
-        break;
-*/
-        default:
-            return ARGP_ERR_UNKNOWN;
-    }
-    return 0;
-}
-
-static struct argp argp = { options, parse_opt, doc, doc1 };
 
 int parse_color(char *color, unsigned int *red, unsigned int *green, unsigned int *blue ){
     if (strlen(color) != 6)
@@ -114,12 +49,15 @@ int sync_flow(char* directive){
         return turnOffBacklightSync();
     else{
         printf("Command not recognized\n"
-               "Possible values are: wave wave2 color off\n");
+               "Possible values are: color wave wave2 off\n");
 
         return staticColorSync(red, green, blue);       // TODO: refactor; leave information block and nothing instead
     }
 }
 
+int separate_flow(){
+
+}
 
 
 int main(int argc, char *argv[]) {
@@ -139,19 +77,24 @@ int main(int argc, char *argv[]) {
     if (arguments.quiet)
         freopen("/dev/null", "a", stdout);
 
-    if (arguments.sync == arguments.separate == 1){
-        printf("Only one option must be defined: '-s' or '-e'\n");
+    if (arguments.sync && arguments.separate){
+        printf("Only one option must be defined: '-s' or '-e'\n");        
         return -1;
     }
-
+    /*
+    if (arguments.separate && ){
+        printf("In separate flow each zone has to be defined: '-z1=color -z2=impulse ... -z6=color'\n");        
+        return -1;
+    }
+    */
     if (parse_color(arguments.color, &red, &green, &blue) != 0){
         printf("Color parse failure\n");
         return -1;
     }
-    
-    int brightness = atoi(arguments.brightness);
-    if (brightness > 5)
-        brightness = 0;
+            
+            int brightness = atoi(arguments.brightness);
+            if (brightness > 5)
+                brightness = 0;
 
     // - - -
     int ret = configure_device();

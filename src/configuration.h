@@ -13,4 +13,3 @@ const uint16_t PID = 0x5711; // REAL
 unsigned int TIMEOUT = 2000;
 int counter; 
 int limit;
-int verbose_output = 0;
