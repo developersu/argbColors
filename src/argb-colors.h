@@ -105,7 +105,7 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state){
             break;
         case 'v':
             verbose_output = 1;
-        	case Z1:
+        case Z1:
             arguments->z1 = arg;
             break;
         case Z2:
@@ -124,42 +124,59 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state){
             arguments->z6 = arg;
             break;
 	    case C1:
-            arguments->z1 = arg;
+            arguments->c1 = arg;
             break;
         case C2:
-            arguments->z2 = arg;
+            arguments->c2 = arg;
             break;
 	    case C3:
-            arguments->z3 = arg;
+            arguments->c3 = arg;
             break;
         case C4:
-            arguments->z4 = arg;
+            arguments->c4 = arg;
             break;
 	    case C5:
-            arguments->z5 = arg;
+            arguments->c5 = arg;
             break;
         case C6:
-            arguments->z6 = arg;
+            arguments->c6 = arg;
             break;
 	    case I1:
-            arguments->z1 = arg;
+            arguments->i1 = arg;
             break;
         case I2:
-            arguments->z2 = arg;
+            arguments->i2 = arg;
             break;
 	    case I3:
-            arguments->z3 = arg;
+            arguments->i3 = arg;
             break;
         case I4:
-            arguments->z4 = arg;
+            arguments->i4 = arg;
             break;
     	case I5:
-            arguments->z5 = arg;
+            arguments->i5 = arg;
             break;
         case I6:
-            arguments->z6 = arg;
+            arguments->i6 = arg;
             break;
-
+        case B1:
+            arguments->b1 = arg;
+            break;
+        case B2:
+            arguments->b2 = arg;
+            break;
+	    case B3:
+            arguments->b3 = arg;
+            break;
+        case B4:
+            arguments->b4 = arg;
+            break;
+    	case B5:
+            arguments->b5 = arg;
+            break;
+        case B6:
+            arguments->b6 = arg;
+            break;
         
         case ARGP_KEY_ARG:
             if (state->arg_num >= 1) // Too many arguments
