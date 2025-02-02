@@ -436,11 +436,11 @@ int flash(int brightness, int frequency, unsigned char red, unsigned char green,
     return 0;
 }
 
-int doubleFlash(int brighness, int frequency, unsigned char red, unsigned char green, unsigned char blue){
+int doubleFlash(int brightness, int frequency, unsigned char red, unsigned char green, unsigned char blue){
 
     unsigned char brgt;
 
-    switch (brighness){
+    switch (brightness){
         case 0:
             brgt = 0x1a;
             break;

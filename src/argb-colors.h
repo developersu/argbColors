@@ -8,10 +8,13 @@ enum separate_options {
     B1, B2, B3, B4, B5, B6
 };
 
-const char *argp_program_version = "argbColor 0.1";
+const char *argp_program_version = "argb-color 0.1\n\n\
+License: GPLv3+: GNU GPL version 3 or newer <https://gnu.org/licenses/gpl.html>.\n\
+Dmitry Isaenko, 2025, Russia.\n\
+https://redrise.ru, https://github.com/developersu";
 const char *argp_program_bug_address = "https://github.com/developersu/argbColors/issues/";
 static char doc[] = "-s [color|wave|wave2|off]\n-e -z1=[color|off|impulse|flash|flash2|cycle] ... -z6=[...]";
-static char doc1[] = "Apply same effect to every connected device or configure each device separately\v\
+static char doc1[] = "Apply one effect for everything or configure each 'device' separately\v\
 Command's related options:\n\
 Synchronized\n\
  * color:   color (-c ...)\n\
@@ -34,7 +37,7 @@ static struct argp_option options[] = {
   {"separate",   'e', 0,           0, "Separate commands flow"      , 1},
   {"color",      'c', "RGB_color", 0, "Color (000000..ffffff)"      , 2},
 
-  {"brightness", 'b', "value",     0, "Brightness (0..5)"           , 2},
+  {"brightness", 'b', "value",     0, "Brightness (0..4)"           , 2},
 
   {"z1", Z1, "command", 0, "Command for zone 1", 3 },
   {"z2", Z2, "command", 0, "Command for zone 2", 3 },
@@ -50,19 +53,19 @@ static struct argp_option options[] = {
   {"c5", C5, "RGB_color", 0, "Color for zone 5", 4 },
   {"c6", C6, "RGB_color", 0, "Color for zone 6", 4 },
   
-  {"i1", I1, "value", 0, "Intensity/frequency for zone 1", 4 },
-  {"i2", I2, "value", 0, "Intensity/frequency for zone 2", 4 },
-  {"i3", I3, "value", 0, "Intensity/frequency for zone 3", 4 },
-  {"i4", I4, "value", 0, "Intensity/frequency for zone 4", 4 },
-  {"i5", I5, "value", 0, "Intensity/frequency for zone 5", 4 },
-  {"i6", I6, "value", 0, "Intensity/frequency for zone 6", 4 },
+  {"i1", I1, "value", 0, "Intensity/frequency for zone 1 (0..4)", 4 },
+  {"i2", I2, "value", 0, "Intensity/frequency for zone 2 (0..4)", 4 },
+  {"i3", I3, "value", 0, "Intensity/frequency for zone 3 (0..4)", 4 },
+  {"i4", I4, "value", 0, "Intensity/frequency for zone 4 (0..4)", 4 },
+  {"i5", I5, "value", 0, "Intensity/frequency for zone 5 (0..4)", 4 },
+  {"i6", I6, "value", 0, "Intensity/frequency for zone 6 (0..4)", 4 },
   
-  {"b1", B1, "value", 0, "Brightness for zone 1", 4 },
-  {"b2", B2, "value", 0, "Brightness for zone 2", 4 },
-  {"b3", B3, "value", 0, "Brightness for zone 3", 4 },
-  {"b4", B4, "value", 0, "Brightness for zone 4", 4 },
-  {"b5", B5, "value", 0, "Brightness for zone 5", 4 },
-  {"b6", B6, "value", 0, "Brightness for zone 6", 4 },
+  {"b1", B1, "value", 0, "Brightness for zone 1 (0..4)", 4 },
+  {"b2", B2, "value", 0, "Brightness for zone 2 (0..4)", 4 },
+  {"b3", B3, "value", 0, "Brightness for zone 3 (0..4)", 4 },
+  {"b4", B4, "value", 0, "Brightness for zone 4 (0..4)", 4 },
+  {"b5", B5, "value", 0, "Brightness for zone 5 (0..4)", 4 },
+  {"b6", B6, "value", 0, "Brightness for zone 6 (0..4)", 4 },
 
   {"quiet",      'q', 0,           0, "Mute output"                   , 7},
   {"verbose",    'v', 0,           0, "Verbose output"                , 7},
