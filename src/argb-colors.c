@@ -20,6 +20,9 @@
 #include "commands.c"
 #include "iousb.c"
 
+enum synchronized_commands { SYNC_COLOR, SYNC_WAVE, SYNC_WAVE2, SYNC_OFF, SPEC_IMPULSE } 
+synchronized_commands;
+
 struct separate_c{
     char *command1, *command2, *command3, *command4, *command5, *command6; 
     int red1, red2, red3, red4, red5, red6;
@@ -28,6 +31,9 @@ struct separate_c{
     int brightness1, brightness2, brightness3, brightness4, brightness5, brightness6;
     int intensity1, intensity2, intensity3, intensity4, intensity5, intensity6; 
 } sc;
+
+separate_commands_set s;
+enum synchronized_commands sync_cmd;
 
 void parse_color(char *color, unsigned int *red, unsigned int *green, unsigned int *blue ){
     if (strlen(color) != 6){
@@ -59,26 +65,30 @@ int parse_brightness(char *brightness){
     return ret;
 }
 
-int sync_flow(char* command, unsigned int red, unsigned int green, unsigned int blue){
-    if (strcmp(command, "wave") == 0)
-        return wave1();
+int prepare_sync(char* command){
+    if (strcmp(command, "") == 0)
+        sync_cmd = SYNC_COLOR;
+    else if (strcmp(command, "wave") == 0)
+        sync_cmd = SYNC_WAVE;
     else if (strcmp(command, "wave2") == 0)
-        return wave2();
+        sync_cmd = SYNC_WAVE2;
     else if (strcmp(command, "color") == 0)
-        return staticColorSync(red, green, blue);
+        sync_cmd = SYNC_COLOR;
     else if (strcmp(command, "off") == 0)
-        return turnOffBacklightSync();
+        sync_cmd = SYNC_OFF;
+    else if (strcmp(command, "impulse") == 0)
+        sync_cmd = SPEC_IMPULSE;
     else{
         printf("Invalid command \"%s\"\n"
-               "Allowed: color wave wave2 off\n", command);
-
-        return staticColorSync(red, green, blue);       // TODO: refactor; leave information block and nothing instead
+            "Allowed: color wave wave2 off\n", command);
+        return -1;
     }
+    return 0;
 }
 
-int parse_single_separate(static_commands_set *s, int dev_number, char *command, 
-                        int red, int green, int blue, 
-                        int brightness, int intensity){
+int make_separate_command(separate_commands_set *s, int dev_number, char *command, 
+                          int red, int green, int blue, 
+                          int brightness, int intensity){
     if (strcmp(command, "color") == 0){
         if (staticOneColor(dev_number, s, brightness, red, green, blue))
             return -1;
@@ -104,38 +114,57 @@ int parse_single_separate(static_commands_set *s, int dev_number, char *command,
             return -1;
     }
     else{
-        printf("Invalid command \"%s\"\n"
-                "Allowed: color off impulse flash flash2 cycle\n", command);
+        printf("Invalid command --z%d=%s\n"
+                "Allowed: color off impulse flash flash2 cycle\n", dev_number, command);
         return -1;
     }
 
     return 0;
 }
 
-int separate_flow(){
+int make_separate_commands_set(){
+    if (make_separate_command(&s, 1, sc.command1, sc.red1, sc.green1, sc.blue1, sc.brightness1, sc.intensity1))
+        return -1;
+    if (make_separate_command(&s, 2, sc.command2, sc.red2, sc.green2, sc.blue2, sc.brightness2, sc.intensity2))
+        return -1;
+    if (make_separate_command(&s, 3, sc.command3, sc.red3, sc.green3, sc.blue3, sc.brightness3, sc.intensity3))
+        return -1;
+    if (make_separate_command(&s, 4, sc.command4, sc.red4, sc.green4, sc.blue4, sc.brightness4, sc.intensity4))
+        return -1;
+    if (make_separate_command(&s, 5, sc.command5, sc.red5, sc.green5, sc.blue5, sc.brightness5, sc.intensity5))
+        return -1;
+    if (make_separate_command(&s, 6, sc.command6, sc.red6, sc.green6, sc.blue6, sc.brightness6, sc.intensity6))
+        return -1;
 
-    static_commands_set s;
-    
-    if (parse_single_separate(&s, 1, sc.command1, sc.red1, sc.green1, sc.blue1, sc.brightness1, sc.intensity1))
-        return staticColorSync(sc.red1, sc.green1, sc.blue1);        // TODO: FIX ME
-    if (parse_single_separate(&s, 2, sc.command2, sc.red2, sc.green2, sc.blue2, sc.brightness2, sc.intensity2))
-        return staticColorSync(sc.red2, sc.green2, sc.blue2);        // TODO: FIX ME
-    if (parse_single_separate(&s, 3, sc.command3, sc.red3, sc.green3, sc.blue3, sc.brightness3, sc.intensity3))
-        return staticColorSync(sc.red3, sc.green3, sc.blue3);        // TODO: FIX ME
-    if (parse_single_separate(&s, 4, sc.command4, sc.red4, sc.green4, sc.blue4, sc.brightness4, sc.intensity4))
-        return staticColorSync(sc.red4, sc.green4, sc.blue4);        // TODO: FIX ME
-    if (parse_single_separate(&s, 5, sc.command5, sc.red5, sc.green5, sc.blue5, sc.brightness5, sc.intensity5))
-        return staticColorSync(sc.red5, sc.green5, sc.blue5);        // TODO: FIX ME
-    if (parse_single_separate(&s, 6, sc.command6, sc.red6, sc.green6, sc.blue6, sc.brightness6, sc.intensity6))
-        return staticColorSync(sc.red6, sc.green6, sc.blue6);        // TODO: FIX ME
+    return 0;
+}
 
-    return runStaticCommand(s);
+int sync_flow(unsigned int red, unsigned int green, unsigned int blue){
+    switch (sync_cmd){
+        case SYNC_COLOR:
+            return staticColorSync(red, green, blue);
+        case SYNC_WAVE:
+            return wave1();
+        case SYNC_WAVE2:
+            return wave2();
+        case SYNC_OFF:
+            return turnOffBacklightSync();
+        case SPEC_IMPULSE:
+            make_separate_command(&s, 1, "impulse", red, green, blue, 4, 4);
+            make_separate_command(&s, 2, "impulse", red, green, blue, 4, 4);
+            make_separate_command(&s, 3, "impulse", red, green, blue, 4, 4);
+            make_separate_command(&s, 4, "impulse", red, green, blue, 4, 4);
+            make_separate_command(&s, 5, "impulse", red, green, blue, 4, 4);
+            make_separate_command(&s, 6, "impulse", red, green, blue, 4, 4);
+            return runStaticCommand(s);
+        default:
+            return -1;
+    }
 }
 
 int main(int argc, char *argv[]) {
-
     struct arguments arguments;
-    /* Default values. */
+    /* Defaults. */
     arguments.quiet = 0;
     arguments.sync = 0;
     arguments.separate = 0;
@@ -146,10 +175,10 @@ int main(int argc, char *argv[]) {
     arguments.b1 = arguments.b2 = arguments.b3 = arguments.b4 = 
     arguments.b5 = arguments.b6 = arguments.brightness = "4";
     arguments.z1 = arguments.z2 = arguments.z3 = 
-    arguments.z4 = arguments.z5 = arguments.z6 = "-";
+    arguments.z4 = arguments.z5 = arguments.z6 = "???";
 
     argp_parse(&argp, argc, argv, 0, 0, &arguments);
-
+    
     if (arguments.quiet)
         freopen("/dev/null", "a", stdout);
 
@@ -162,7 +191,7 @@ int main(int argc, char *argv[]) {
     parse_color(arguments.color, &red, &green, &blue);
     brightness = parse_brightness(arguments.brightness);
 
-    if (arguments.separate == 1){   
+    if (arguments.separate == 1){
         sc.command1 = arguments.z1;
         sc.command2 = arguments.z2;
         sc.command3 = arguments.z3;
@@ -190,7 +219,12 @@ int main(int argc, char *argv[]) {
         sc.intensity4 = parse_brightness(arguments.i4);
         sc.intensity5 = parse_brightness(arguments.i5);
         sc.intensity6 = parse_brightness(arguments.i6);
+
+        if (make_separate_commands_set(&sc))
+            return -1;
     }
+    else if (prepare_sync(arguments.args[0]))
+        return -1;
 
     // - - -
     int ret = configure_device();
@@ -210,27 +244,17 @@ int main(int argc, char *argv[]) {
         printf("Initialization sequence sent\n");
 
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-    if (arguments.sync == 1){                          // Sync flow
-        if (sync_flow(arguments.args[0], red, green, blue)){
+    if (arguments.separate == 1){                 // Separate flow
+        if (runStaticCommand(s)){
             printf("Command transfer failure\n");
             libusb_close(dev_handle);
             return -1;
         }
     }
-    else if (arguments.separate == 1){                 // Separate flow
-        if (separate_flow(&sc)){
-            printf("Command transfer failure\n");
-            libusb_close(dev_handle);
-            return -1;
-        }
-    }
-    else{
-        if(staticColorSync(red, green, blue)){          // Executed neither for sync, nor for separate => set single color
-            printf("Command transfer failure\n");
-            libusb_close(dev_handle);
-            return -1;
-        }
+    else if (sync_flow(red, green, blue)){       // Sync & not-defined
+        printf("Command transfer failure\n");
+        libusb_close(dev_handle);
+        return -1;
     }
     
     if (terminate_sequence()){
