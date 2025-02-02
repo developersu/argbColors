@@ -25,11 +25,11 @@ Separate\n\
  * flash2:  color (-cN ...), brightness (-bN ...), frequency (-iN ...)\n\
  * cycle:   intensity (-iN ...), brightness (-bN ...)\n\n\
 Zones description:\n\
- |‾‾|‾‾‾‾‾‾‾‾‾‾‾1| \n\
+ |‾‾|‾‾‾‾‾‾‾‾‾‾‾4| \n\
  | 6| |‾‾| ||||  | \n\
  |  |  ‾‾  ||||  | \n\
  |__|      |‾‾‾| | \n\
- |         |_4_| | \n\
+ |         |_1_| | \n\
  |___2_3_5_______| \n";
 
 static struct argp_option options[] = {
@@ -38,6 +38,7 @@ static struct argp_option options[] = {
   {"color",      'c', "RGB_color", 0, "Color (000000..ffffff)"      , 2},
 
   {"brightness", 'b', "value",     0, "Brightness (0..4)"           , 2},
+  {"intensity",  'i', "value",     0, "Intensity (0..4)"            , 2},
 
   {"z1", Z1, "command", 0, "Command for zone 1", 3 },
   {"z2", Z2, "command", 0, "Command for zone 2", 3 },
@@ -78,7 +79,7 @@ struct arguments{
   int sync;
   int separate;
   char *color,
-       *brightness,
+       *brightness, *intensity,
        *z1, *z2, *z3, *z4, *z5, *z6,
        *c1, *c2, *c3, *c4, *c5, *c6,
        *i1, *i2, *i3, *i4, *i5, *i6,
@@ -105,6 +106,9 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state){
             break;
         case 'b':
             arguments->brightness = arg;
+            break;
+        case 'i':
+            arguments->intensity = arg;
             break;
         case 'v':
             verbose_output = 1;

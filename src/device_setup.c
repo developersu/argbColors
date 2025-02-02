@@ -19,7 +19,6 @@ int findDevice(libusb_device *dev){
 }
 
 int configure_device(){
-
     libusb_context *context;
     int ret = libusb_init_context(&context, /*options=*/NULL, /*num_options=*/0);
     if (ret < 0){

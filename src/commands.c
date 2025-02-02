@@ -198,7 +198,15 @@ int runStaticCommand(separate_commands_set c_set){
 
     counter = 0;
     limit = 7;
-
+    
+#ifdef DEBUG
+    print_array(c_set.dir1, 64);
+    print_array(c_set.dir2, 64);
+    print_array(c_set.dir3, 64);
+    print_array(c_set.dir4, 64);
+    print_array(c_set.dir5, 64);
+    print_array(c_set.dir6, 64);
+#endif
     if(64 != writeUsb(c_set.dir1))
         return 1;
 
