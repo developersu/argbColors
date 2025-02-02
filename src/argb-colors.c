@@ -20,6 +20,15 @@
 #include "commands.c"
 #include "iousb.c"
 
+struct separate_c{
+    char *command1, *command2, *command3, *command4, *command5, *command6; 
+    int red1, red2, red3, red4, red5, red6;
+    int green1, green2, green3, green4, green5, green6; 
+    int blue1, blue2, blue3, blue4, blue5, blue6; 
+    int brightness1, brightness2, brightness3, brightness4, brightness5, brightness6;
+    int intensity1, intensity2, intensity3, intensity4, intensity5, intensity6; 
+} sc;
+
 void parse_color(char *color, unsigned int *red, unsigned int *green, unsigned int *blue ){
     if (strlen(color) != 6){
         printf("Incorrect color: \"%s\". Using default: \"ffffff\"\n", color);
@@ -67,34 +76,60 @@ int sync_flow(char* command, unsigned int red, unsigned int green, unsigned int 
     }
 }
 
-int separate_flow(char *command1, int red1, int green1, int blue1, int brightness1, int intensity1,
-                  char *command2, int red2, int green2, int blue2, int brightness2, int intensity2,
-                  char *command3, int red3, int green3, int blue3, int brightness3, int intensity3,
-                  char *command4, int red4, int green4, int blue4, int brightness4, int intensity4,
-                  char *command5, int red5, int green5, int blue5, int brightness5, int intensity5,
-                  char *command6, int red6, int green6, int blue6, int brightness6, int intensity6 ){
-    
-    if (strcmp(command1, "color") == 0)
-        return staticColorSeparate(brightness1, red1, green1, blue1);
-    else if (strcmp(command1, "off") == 0)
-        return turnOffBacklight();
-    else if (strcmp(command1, "impulse") == 0)
-        return impulse(intensity1, red1, green1, blue1);
-    else if (strcmp(command1, "flash") == 0)
-        return flash(brightness1, intensity1, red1, green1, blue1);
-    else if (strcmp(command1, "flash2") == 0)
-        return doubleFlash(brightness1, intensity1, red1, green1, blue1);
-    else if (strcmp(command1, "cycle") == 0)
-        return cycle(intensity1, brightness1);
+int parse_single_separate(static_commands_set *s, int dev_number, char *command, 
+                        int red, int green, int blue, 
+                        int brightness, int intensity){
+    if (strcmp(command, "color") == 0){
+        if (staticOneColor(dev_number, s, brightness, red, green, blue))
+            return -1;
+    }
+    else if (strcmp(command, "off") == 0){
+        if (staticOff(dev_number, s))
+            return -1;
+    }      
+    else if (strcmp(command, "impulse") == 0){
+        if (staticImpulse(dev_number, s, intensity, red, green, blue))
+            return -1;
+    }
+    else if (strcmp(command, "flash") == 0){
+        if (staticFlash(dev_number, s, brightness, intensity, red, green, blue))
+            return -1;
+    }
+    else if (strcmp(command, "flash2") == 0){
+        if (staticFlash2(dev_number, s, brightness, intensity, red, green, blue))
+            return -1;
+    }
+    else if (strcmp(command, "cycle") == 0){
+        if (staticCycle(dev_number, s, intensity, brightness))
+            return -1;
+    }
     else{
         printf("Invalid command \"%s\"\n"
-                "Allowed: color off impulse flash flash2 cycle\n", command1);
-        return staticColorSync(red1, green1, blue1);        // TODO: FIX ME
+                "Allowed: color off impulse flash flash2 cycle\n", command);
+        return -1;
     }
 
+    return 0;
+}
 
+int separate_flow(){
 
-    //FIXME
+    static_commands_set s;
+    
+    if (parse_single_separate(&s, 1, sc.command1, sc.red1, sc.green1, sc.blue1, sc.brightness1, sc.intensity1))
+        return staticColorSync(sc.red1, sc.green1, sc.blue1);        // TODO: FIX ME
+    if (parse_single_separate(&s, 2, sc.command2, sc.red2, sc.green2, sc.blue2, sc.brightness2, sc.intensity2))
+        return staticColorSync(sc.red2, sc.green2, sc.blue2);        // TODO: FIX ME
+    if (parse_single_separate(&s, 3, sc.command3, sc.red3, sc.green3, sc.blue3, sc.brightness3, sc.intensity3))
+        return staticColorSync(sc.red3, sc.green3, sc.blue3);        // TODO: FIX ME
+    if (parse_single_separate(&s, 4, sc.command4, sc.red4, sc.green4, sc.blue4, sc.brightness4, sc.intensity4))
+        return staticColorSync(sc.red4, sc.green4, sc.blue4);        // TODO: FIX ME
+    if (parse_single_separate(&s, 5, sc.command5, sc.red5, sc.green5, sc.blue5, sc.brightness5, sc.intensity5))
+        return staticColorSync(sc.red5, sc.green5, sc.blue5);        // TODO: FIX ME
+    if (parse_single_separate(&s, 6, sc.command6, sc.red6, sc.green6, sc.blue6, sc.brightness6, sc.intensity6))
+        return staticColorSync(sc.red6, sc.green6, sc.blue6);        // TODO: FIX ME
+
+    return runStaticCommand(s);
 }
 
 int main(int argc, char *argv[]) {
@@ -122,50 +157,39 @@ int main(int argc, char *argv[]) {
         printf("Only one option must be defined: '-s' or '-e'\n");
         return -1;
     }
-    /*
-    if (arguments.separate && ){
-        printf("In separate flow each zone has to be defined: '-z1=color -z2=impulse ... -z6=color'\n");        
-        return -1;
-    }
-    */
-    unsigned int red, green, blue,
-                 red1, green1, blue1,
-                 red2, green2, blue2,
-                 red3, green3, blue3,
-                 red4, green4, blue4,
-                 red5, green5, blue5,
-                 red6, green6, blue6,
-                 brightness, 
-                 brightness1, brightness2, brightness3,
-                 brightness4, brightness5, brightness6,
-                 intensity1, intensity2, intensity3,
-                 intensity4, intensity5, intensity6;
-
+    
+    unsigned int red, green, blue, brightness;
     parse_color(arguments.color, &red, &green, &blue);
-
     brightness = parse_brightness(arguments.brightness);
 
-    if (arguments.separate == 1){
-        parse_color(arguments.c1, &red1, &green1, &blue1);
-        parse_color(arguments.c2, &red2, &green2, &blue2);
-        parse_color(arguments.c3, &red3, &green3, &blue3);
-        parse_color(arguments.c4, &red4, &green4, &blue4);
-        parse_color(arguments.c5, &red5, &green5, &blue5);
-        parse_color(arguments.c6, &red6, &green6, &blue6);
+    if (arguments.separate == 1){   
+        sc.command1 = arguments.z1;
+        sc.command2 = arguments.z2;
+        sc.command3 = arguments.z3;
+        sc.command4 = arguments.z4;
+        sc.command5 = arguments.z5;
+        sc.command6 = arguments.z6;
+
+        parse_color(arguments.c1, &sc.red1, &sc.green1, &sc.blue1);
+        parse_color(arguments.c2, &sc.red2, &sc.green2, &sc.blue2);
+        parse_color(arguments.c3, &sc.red3, &sc.green3, &sc.blue3);
+        parse_color(arguments.c4, &sc.red4, &sc.green4, &sc.blue4);
+        parse_color(arguments.c5, &sc.red5, &sc.green5, &sc.blue5);
+        parse_color(arguments.c6, &sc.red6, &sc.green6, &sc.blue6);
         
-        brightness1 = parse_brightness(arguments.b1);
-        brightness2 = parse_brightness(arguments.b2);
-        brightness3 = parse_brightness(arguments.b3);
-        brightness4 = parse_brightness(arguments.b4);
-        brightness5 = parse_brightness(arguments.b5);
-        brightness6 = parse_brightness(arguments.b6);
+        sc.brightness1 = parse_brightness(arguments.b1);
+        sc.brightness2 = parse_brightness(arguments.b2);
+        sc.brightness3 = parse_brightness(arguments.b3);
+        sc.brightness4 = parse_brightness(arguments.b4);
+        sc.brightness5 = parse_brightness(arguments.b5);
+        sc.brightness6 = parse_brightness(arguments.b6);
         
-        intensity1 = parse_brightness(arguments.i1);
-        intensity2 = parse_brightness(arguments.i2);
-        intensity3 = parse_brightness(arguments.i3);
-        intensity4 = parse_brightness(arguments.i4);
-        intensity5 = parse_brightness(arguments.i5);
-        intensity6 = parse_brightness(arguments.i6);
+        sc.intensity1 = parse_brightness(arguments.i1);
+        sc.intensity2 = parse_brightness(arguments.i2);
+        sc.intensity3 = parse_brightness(arguments.i3);
+        sc.intensity4 = parse_brightness(arguments.i4);
+        sc.intensity5 = parse_brightness(arguments.i5);
+        sc.intensity6 = parse_brightness(arguments.i6);
     }
 
     // - - -
@@ -195,12 +219,7 @@ int main(int argc, char *argv[]) {
         }
     }
     else if (arguments.separate == 1){                 // Separate flow
-        if (separate_flow(arguments.z1, red1, green1, blue1, brightness1, intensity1,
-                        arguments.z2, red2, green2, blue2, brightness2, intensity2,
-                        arguments.z3, red3, green3, blue3, brightness3, intensity3,
-                        arguments.z4, red4, green4, blue4, brightness4, intensity4,
-                        arguments.z5, red5, green5, blue5, brightness5, intensity5,
-                        arguments.z6, red6, green6, blue6, brightness6, intensity6)){
+        if (separate_flow(&sc)){
             printf("Command transfer failure\n");
             libusb_close(dev_handle);
             return -1;
