@@ -199,14 +199,6 @@ int runStaticCommand(separate_commands_set c_set){
     counter = 0;
     limit = 7;
     
-#ifdef DEBUG
-    print_array(c_set.dir1, 64);
-    print_array(c_set.dir2, 64);
-    print_array(c_set.dir3, 64);
-    print_array(c_set.dir4, 64);
-    print_array(c_set.dir5, 64);
-    print_array(c_set.dir6, 64);
-#endif
     if(64 != writeUsb(c_set.dir1))
         return 1;
 
@@ -646,7 +638,7 @@ int staticCycle(int dev_number, separate_commands_set *s, int intensity, int bri
             return 1;
     }
     
-       switch (dev_number){
+    switch (dev_number){
         case 1: //cc 22 04 00 00 00 00 00 00 00 00 04 __ 00 fd 00 fe 00 00 00 00 00 __ __ __ __ 00 00 00 00 07
             s->name1 = EFFECT_CYCLE;
             memcpy(s->dir1, (unsigned char [64]){ 0xcc, 0x22, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00,   0x00, 0x00, 0x00, 0x04, brgt, 0x00, 0xfd, 0x00, 

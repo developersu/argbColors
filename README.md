@@ -3,7 +3,10 @@
 
 [![status-badge](https://ci.redrise.ru/api/badges/13/status.svg)](https://ci.redrise.ru/repos/13)
 
-Reference hardware used: Z890 AORUS PRO ICE, 048d:5711 Integrated Technology Express, Inc. GIGABYTE Device 
+Reference hardware used: Z890 AORUS PRO ICE, 048d:5711 Integrated Technology Express, Inc. GIGABYTE Device
+
+Information regarding other motherboards:
+* *[X870 AORUS ELITE WIFI7](https://github.com/developersu/argbColors/issues/2)*
 
 ### udev rules
 
@@ -21,7 +24,7 @@ See SPECIFICATION.md
 ### License
 [![GNU GPLv3 Image](https://www.gnu.org/graphics/gplv3-127x51.png)](https://www.gnu.org/licenses/gpl-3.0.en.html)  
 
-argbColors is a free software licensed under GPL v3.0 It is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY. [GNU General Public License](https://www.gnu.org/licenses/gpl.html) as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+argbColors is a free software licensed under GPL v3.0 It is distributed in the hope that it will be useful, but **WITHOUT ANY WARRANTY**. [GNU General Public License](https://www.gnu.org/licenses/gpl.html) as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
 
 This application is in no way affiliated with GIGABYTE, Integrated Technology Express or any of its partners

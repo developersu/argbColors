@@ -21,7 +21,7 @@
 #include "iousb.c"
 
 enum synchronized_commands { SYNC_COLOR, SYNC_WAVE, SYNC_WAVE2, SYNC_OFF, 
-                            SPEC_IMPULSE, SPEC_FLASH, SPEC_FLASH2, SPEC_CYCLE } 
+                            SPEC_IMPULSE, SPEC_FLASH, SPEC_FLASH2, SPEC_CYCLE, SPEC_COLOR} 
 synchronized_commands;
 
 struct separate_c{
@@ -85,9 +85,11 @@ int prepare_sync(char* command){
         sync_cmd = SPEC_FLASH2;
     else if (strcmp(command, "cycle") == 0)
         sync_cmd = SPEC_CYCLE;
+    else if (strcmp(command, "color2") == 0)
+        sync_cmd = SPEC_COLOR;
     else{
         printf("Invalid command \"%s\"\n"
-            "Allowed: color wave wave2 off. Plus aliases: impulse flash flash2 cycle\n", command);
+            "Allowed: color wave wave2 off. Plus aliases: impulse flash flash2 cycle color2\n", command);
         return -1;
     }
     return 0;
@@ -174,6 +176,11 @@ int sync_flow(unsigned int red, unsigned int green, unsigned int blue, unsigned 
         case SPEC_CYCLE:
             for (int i = 1; i < 7; i++){
                 make_separate_command(&s, i, "cycle", red, green, blue, brightness, intensity);
+            }
+            return runStaticCommand(s);
+        case SPEC_COLOR:
+            for (int i = 1; i < 7; i++){
+                make_separate_command(&s, i, "color", red, green, blue, brightness, intensity);
             }
             return runStaticCommand(s);
         default:
