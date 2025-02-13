@@ -13,7 +13,7 @@ License: GPLv3+: GNU GPL version 3 or newer <https://gnu.org/licenses/gpl.html>.
 Dmitry Isaenko, 2025, Russia.\n\
 https://redrise.ru, https://github.com/developersu";
 const char *argp_program_bug_address = "https://github.com/developersu/argbColors/issues/";
-static char doc[] = "-s [color|wave|wave2|off]\n-e -z1=[color|off|impulse|flash|flash2|cycle] ... -z6=[...]";
+static char doc[] = "-s [color|wave|wave2|off]\n-e -z1=[color|off|impulse|flash|flash2|cycle|impulse|flash|flash2|cycle|color2] ... -z6=[...]";
 static char doc1[] = "Apply one effect for everything or configure each 'device' separately\v\
 Command's related options:\n\
 Synchronized\n\
