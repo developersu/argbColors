@@ -5,8 +5,9 @@
 
 Reference hardware used: Z890 AORUS PRO ICE, 048d:5711 Integrated Technology Express, Inc. GIGABYTE Device
 
-Information regarding other motherboards:
+Information regarding other compatible motherboards:
 * *[X870 AORUS ELITE WIFI7](https://github.com/developersu/argbColors/issues/2)*
+* *[X870E AORUS PRO](https://github.com/developersu/argbColors/issues/3)*
 
 ### udev rules
 
@@ -20,6 +21,41 @@ SUBSYSTEM=="usb", ATTRS{idVendor}=="048d", ATTRS{idProduct}=="5711", MODE="0666"
 ### Research
 
 See SPECIFICATION.md
+
+### Requirements
+
+* libusb
+
+### Usage examples
+
+```
+Set color ff2f00:
+$ argb-colors
+
+Set one color:
+$ argb-colors -c ff00ff
+
+Set 'wave' effect:
+$ argb-colors -s wave
+
+Set: 
+- one color 0000ff and default brightness for region 1, 
+- cycle effect with brightness of 2 and intensity of 3 for region 2, 
+- impulse effect with intensity of 0 and color of ff0000 for region 3, 
+- flash effect with color ff00ff, default value of intensity and brightness of 1 for zone 4, 
+- flash2 effect with all default values for zone 5,
+- one color of default value with brightness of 3 for zone 5
+$ argb-colors -e --c1=0000ff --z1=color --z2=cycle --i2=3 --b2=4 --z3=impulse --i3=0 --c3=ff0000 --z4=flash --c4=ff00ff --b4=1 --z5=flash2 --z6=color --i6=3 
+
+Set impulse effect with color of af0f0f, intensity of 0 and brightness of 4
+$ argb-colors -s impulse -i 0 -b 4 -c af0f0f
+
+Get help and usage information:
+$ argb-colors --help
+```
+
+##### Todo:
+Remove feature with '-v' option that occasionally causes segfault
 
 ### License
 [![GNU GPLv3 Image](https://www.gnu.org/graphics/gplv3-127x51.png)](https://www.gnu.org/licenses/gpl-3.0.en.html)  

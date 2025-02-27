@@ -9,7 +9,7 @@ enum separate_options {
 };
 
 const char *argp_program_version = "argb-color 0.2\n\n\
-License: GPLv3+: GNU GPL version 3 or newer <https://gnu.org/licenses/gpl.html>.\n\
+License: GNU GPL version 3 or newer <https://gnu.org/licenses/gpl.html>.\n\
 Dmitry Isaenko, 2025, Russia.\n\
 https://redrise.ru, https://github.com/developersu";
 const char *argp_program_bug_address = "https://github.com/developersu/argbColors/issues/";
