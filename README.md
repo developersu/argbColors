@@ -6,10 +6,12 @@
 Reference hardware used: Z890 AORUS PRO ICE, 048d:5711 Integrated Technology Express, Inc. GIGABYTE Device
 
 Information regarding compatible motherboards:
-* Z890 AORUS PRO ICE
+
 * *[X870 AORUS ELITE WIFI7](https://github.com/developersu/argbColors/issues/2)*
+* *[X870E AORUS MASTER](https://github.com/developersu/argbColors/issues/5#issuecomment-2762690239)*
 * *[X870E AORUS PRO](https://github.com/developersu/argbColors/issues/3)*
 * *[Z890 AORUS ELITE WIFI7](https://github.com/developersu/argbColors/issues/4)*
+* Z890 AORUS PRO ICE
 
 Does your motherboard work too? [Come on, tell me!](https://github.com/developersu/argbColors/issues/5)
 
