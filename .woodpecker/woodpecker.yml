@@ -5,7 +5,7 @@ steps:
     image: alpine:3
     commands:
       - echo "FIX ME"
-      - apk update && apk add libusb-dev make gcc musl-dev
+      - apk update && apk add libusb-dev make gcc musl-dev argp-standalone
       - make
       - mkdir -p /builds/argbColors
       - cp bin/argbColors /builds/argbColors/
