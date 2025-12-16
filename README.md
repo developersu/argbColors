@@ -7,6 +7,8 @@ Reference hardware used: Z890 AORUS PRO ICE, 048d:5711 Integrated Technology Exp
 
 Information regarding compatible motherboards:
 
+* *[B850M AORUS ELITE WIFI6E ICE](https://github.com/developersu/argbColors/issues/5)*
+* *[X870 EAGLE WIFI7 (Rev. 1.x)](https://github.com/developersu/argbColors/issues/6)*
 * *[X870 AORUS ELITE WIFI7](https://github.com/developersu/argbColors/issues/2)*
 * *[X870E AORUS MASTER](https://github.com/developersu/argbColors/issues/5#issuecomment-2762690239)*
 * *[X870E AORUS PRO](https://github.com/developersu/argbColors/issues/3)*
