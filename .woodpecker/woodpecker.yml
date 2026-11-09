@@ -2,12 +2,11 @@ steps:
   - name: build-archieve
     when:
       event: [tag, push]
-    image: alpine:3
+    image: debian:trixie
     commands:
-      - echo "FIX ME"
-      - apk update && apk add libusb-dev make gcc musl-dev argp-standalone
+      - apt update && apt install -y --no-install-recommends build-essential libusb-1.0-0-dev
       - make
-      - mkdir -p /builds/argbColors
-      - cp bin/argbColors /builds/argbColors/
+      - mkdir -p /builds/argb-colors
+      - cp bin/argb-colors /builds/argb-colors/
     volumes:
       - /home/www/builds:/builds

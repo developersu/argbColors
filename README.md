@@ -62,10 +62,6 @@ Get help and usage information:
 $ argb-colors --help
 ```
 
-##### Todo:
-* Remove feature with '-v' option that occasionally causes segfault
-* Set correct CI pipeline
-
 ### License
 [![GNU GPLv3 Image](https://www.gnu.org/graphics/gplv3-127x51.png)](https://www.gnu.org/licenses/gpl-3.0.en.html)  
 

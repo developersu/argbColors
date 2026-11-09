@@ -8,7 +8,7 @@ enum separate_options {
     B1, B2, B3, B4, B5, B6
 };
 
-const char *argp_program_version = "argb-color 0.3\n\n\
+const char *argp_program_version = "argb-color 0.4\n\n\
 License: GNU GPL version 3 or newer <https://gnu.org/licenses/gpl.html>.\n\
 Dmitry Isaenko, 2025, Russia.\n\
 https://redrise.ru, https://github.com/developersu";
@@ -112,6 +112,7 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state){
             break;
         case 'v':
             verbose_output = 1;
+            break;
         case Z1:
             arguments->z1 = arg;
             break;
